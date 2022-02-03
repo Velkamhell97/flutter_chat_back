@@ -128,6 +128,8 @@ export const deleteUser = async (req: Request, res: Response) => {
     //Borrar logicamente
     const user = await User.findByIdAndUpdate(id, { state: false }, { new: true })
 
+    await user!.populate('role', 'role')
+
     return res.json({
       msg: 'User delete successfully',
       user

@@ -75,6 +75,9 @@ export const updateUserValidations = checkSchema({
   },
 
   email: {
+    optional: {
+      options: {nullable: true},
+    },
     isEmail : {
       errorMessage: 'Invalid email',
       bail: true

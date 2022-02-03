@@ -18,6 +18,7 @@ const renewToken = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     // const authUser = req.authUser; //--> En el req (se necesita interfaz)
     // const authUser = req.body.authUser; //--> En el body
     const authUser = res.locals.authUser; //--> En los locals
+    yield authUser.populate('role', 'role');
     (0, helpers_1.generateJWT)(authUser.id).then((token) => {
         res.json({
             msg: 'Token renew',
@@ -39,6 +40,7 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     // const user = req.user; //-->Forma 1 (interfaz)
     // const user = req.body.user; //--> Forma 2
     const user = res.locals.user; //--> Forma 3
+    yield user.populate('role', 'role');
     (0, helpers_1.generateJWT)(user.id).then((token) => {
         res.json({
             msg: 'Login successfully',

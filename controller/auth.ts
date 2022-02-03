@@ -3,6 +3,7 @@
   route: auth
 */
 import { Request, Response } from "express"
+import { Document } from "mongoose";
 
 import { generateJWT } from "../helpers/helpers";
 
@@ -12,7 +13,9 @@ import { generateJWT } from "../helpers/helpers";
 export const renewToken = async (req: Request, res: Response) => {
   // const authUser = req.authUser; //--> En el req (se necesita interfaz)
   // const authUser = req.body.authUser; //--> En el body
-  const authUser = res.locals.authUser; //--> En los locals
+  const authUser : Document = res.locals.authUser; //--> En los locals
+  
+  await authUser.populate('role', 'role')
 
   generateJWT(authUser.id).then((token) => {
     res.json({
@@ -34,7 +37,9 @@ export const login = async (req: Request, res: Response) => {
   //-Se recibe de la validacion del input y password, asi no se hace otra operacion en la db
   // const user = req.user; //-->Forma 1 (interfaz)
   // const user = req.body.user; //--> Forma 2
-  const user = res.locals.user //--> Forma 3
+  const user : Document = res.locals.user //--> Forma 3
+
+  await user.populate('role', 'role')
   
   generateJWT(user.id).then((token) => {
     res.json({

@@ -77,6 +77,9 @@ exports.updateUserValidations = (0, express_validator_1.checkSchema)({
         }
     },
     email: {
+        optional: {
+            options: { nullable: true },
+        },
         isEmail: {
             errorMessage: 'Invalid email',
             bail: true
