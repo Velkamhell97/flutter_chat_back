@@ -1,13 +1,19 @@
+/*
+  path: api/auth
+  route: auth
+*/
 import { Request, Response } from "express"
 import { Document } from "mongoose";
 
-import { generateJWT } from "../helpers";
+import { generateJWT } from "../../helpers";
 
-/**
- * @path /auth/ : GET
- */
+/*
+  path --> /api/auth : GET
+*/
 export const renewToken = async (req: Request, res: Response) => {
-  const authUser : Document = res.locals.authUser;
+  // const authUser = req.authUser; //--> En el req (se necesita interfaz)
+  // const authUser = req.body.authUser; //--> En el body
+  const authUser : Document = res.locals.authUser; //--> En los locals
   
   await authUser.populate('role', 'role')
 
@@ -23,11 +29,15 @@ export const renewToken = async (req: Request, res: Response) => {
   })
 }
 
-/**
- * @path /api/auth/login : POST
- */
+//-Se podrian crear interfaces en cada controlador para manejar tipadas las respuestas
+/*
+  path --> /api/auth/login : POST
+*/
 export const login = async (req: Request, res: Response) => {
-  const user : Document = res.locals.user
+  //-Se recibe de la validacion del input y password, asi no se hace otra operacion en la db
+  // const user = req.user; //-->Forma 1 (interfaz)
+  // const user = req.body.user; //--> Forma 2
+  const user : Document = res.locals.user //--> Forma 3
 
   await user.populate('role', 'role')
   

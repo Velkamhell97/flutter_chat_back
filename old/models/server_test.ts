@@ -1,7 +1,7 @@
 import express, { Application } from 'express';
 import cors from 'cors';
 
-import userRoutes from '../routes/auth';
+import { Users } from '../../routes';
 
 
 //-Forma 2 de inicializar un objeto se crea una interfaz que describa sus tipos, si se tiene un subobjeto se
@@ -102,7 +102,7 @@ class ServerTest {
   }
 
   routes() {
-    this.app.use(this.paths.auth, userRoutes)
+    this.app.use(this.paths.auth, Users)
   }
 
 
