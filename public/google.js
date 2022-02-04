@@ -16,7 +16,7 @@ function handleCredentialResponse(response) {
   })
   .then((resp) => resp.json())
   .then((resp) => {
-
+    
     if(resp.error){
       localStorage.setItem('email', resp.email);
       signout()
