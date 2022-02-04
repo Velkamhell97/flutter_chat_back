@@ -3,7 +3,11 @@ function handleCredentialResponse(response) {
     id_token : response.credential
   }
 
-  fetch('http://localhost:8080/api/auth/google', { 
+  const url = window.location.hostname.includes('localhost')
+  ? 'http://localhost:8080/api/auth/google'
+  : 'https://flutter-chat-back.herokuapp.com/api/auth/google'
+
+  fetch(url, { 
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
