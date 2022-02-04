@@ -7,7 +7,8 @@ interface User {
   avatar  ?: string,
   state    : boolean,
   online   : boolean,
-  role     : Types.ObjectId
+  role     : Types.ObjectId,
+  google   : boolean,
 }
 
 const userSchema = new Schema<User>({
@@ -17,7 +18,8 @@ const userSchema = new Schema<User>({
   avatar   : { type: String },
   state    : { type: Boolean, default: true },
   online   : { type: Boolean, default: false },
-  role     : { type: Schema.Types.ObjectId, ref: 'Role', required: true }
+  role     : { type: Schema.Types.ObjectId, ref: 'Role', required: true },
+  google   : { type: Boolean, default: false }
 })
 
 userSchema.methods.toJSON = function() {

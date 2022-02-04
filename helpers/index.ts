@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken';
+import { OAuth2Client, TokenPayload } from 'google-auth-library';
 
 export const generateJWT = (uid : string) => {
   return new Promise<string>((resolve, reject) => {
@@ -28,4 +29,17 @@ export const verifyJWT = (token: string) => {
         }
     })
   })
+}
+
+export const googleVerify = async (token: string) : Promise<TokenPayload> => {
+  const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
+  const ticket = await client.verifyIdToken({
+    idToken: token,
+    audience: process.env.GOOGLE_CLIENT_ID, 
+  });
+
+  const payload = ticket.getPayload();
+
+  return payload!;
 }

@@ -6,6 +6,7 @@ import { Router } from "express";
 import {
   //-Body Validations
   loginValidations,
+  googleValidations,
   
   //-Custom Middlewares
   validateBody,
@@ -14,7 +15,7 @@ import {
 } from '../middlewares';
 
 //-Routes Controllers
-import { login, renewToken } from "../controller/auth";
+import { googleSignIn, login, renewToken } from "../controller/auth";
 
 const router = Router();
 
@@ -25,6 +26,12 @@ router.post('/login',
   validateBody, 
   validateLogin,
   login
+); 
+
+router.post('/google', 
+  googleValidations, 
+  validateBody, 
+  googleSignIn
 ); 
 
 export default router;

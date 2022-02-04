@@ -17,7 +17,3 @@ export const loginValidations = checkSchema({
     }, 
   },
 });
-
-export default {
-  loginValidations
-}
