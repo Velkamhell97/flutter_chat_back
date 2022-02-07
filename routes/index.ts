@@ -1,7 +1,15 @@
-import Auth from './auth';
-import Users from './users';
+import AuthRouter from './auth';
+import UsersRouter from './users';
+import CategoriesRouter from './categories';
+import RolesRouter from './roles';
+import ProductsRouter from './products';
+import SearchsRouter from './searchs';
 
 export {
-  Auth,
-  Users
+  AuthRouter,
+  UsersRouter,
+  CategoriesRouter,
+  RolesRouter,
+  ProductsRouter,
+  SearchsRouter
 }

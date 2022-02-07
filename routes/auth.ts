@@ -1,37 +1,37 @@
-/*
-  path: api/auth
-*/
+/**
+ * @path /api/auth
+ */
 import { Router } from "express";
 
+//-Routes Middlewares
 import {
-  //-Body Validations
-  loginValidations,
-  googleValidations,
-  
-  //-Custom Middlewares
-  validateBody,
-  validateJWT,
-  validateLogin
+  renewTokenMiddlewares,
+  loginMiddlewares,
+  googleSignInMiddlewares,
 } from '../middlewares';
 
 //-Routes Controllers
-import { googleSignIn, login, renewToken } from "../controller/auth";
+import { 
+  googleSignInController,
+  loginController, 
+  renewTokenController 
+} from "../controller/auth";
 
 const router = Router();
 
-router.get('/renew', validateJWT, renewToken);
+router.get('/renew', 
+  renewTokenMiddlewares,
+  renewTokenController
+);
 
 router.post('/login', 
-  loginValidations, 
-  validateBody, 
-  validateLogin,
-  login
+  loginMiddlewares,
+  loginController
 ); 
 
 router.post('/google', 
-  googleValidations, 
-  validateBody, 
-  googleSignIn
+  googleSignInMiddlewares,
+  googleSignInController
 ); 
 
 export default router;

@@ -1,54 +1,54 @@
-/*
-  path: /api/users
-*/
+/**
+ * @path /api/users
+ */
 import { Router } from "express";
 
-import {
-  //-Body Validations
-  createUserValidations,
-  updateUserValidations,
-  deleteUserValidations,
-  
-  //-Custom Middlewares
-  validateBody,
-  validateEmail,
-  validateJWT,
-  validateMongoID,
-  validatePermissions,
-  validateRole,
-} from '../middlewares';
+//-Routes Middlewares
+import { 
+  createUserMiddlewares, 
+  deleteUserMiddlewares, 
+  getUserByIdMiddlewares, 
+  getUserCategoriesMiddlewares, 
+  updateUserMiddlewares 
+} from "../middlewares";
 
 //-Routes Controllers
-import { getUsers, createUser, updateUser, deleteUser } from "../controller/users";
+import { 
+  createUserController,
+  updateUserController,
+  deleteUserController,
+  getUserByIdController,
+  getUserCategoriesController,
+  getUsersController
+} from "../controller/users";
 
 const router = Router();
 
-router.get('/', getUsers);
+router.get('/', getUsersController);
+
+router.get('/:id',
+  getUserByIdMiddlewares,
+  getUserByIdController 
+);
+
+router.get('/:id/categories',
+  getUserCategoriesMiddlewares,
+  getUserCategoriesController
+);
 
 router.post('/', 
-  createUserValidations, 
-  validateBody, 
-  validateEmail,  
-  validateRole, 
-  createUser
+  createUserMiddlewares,
+  createUserController,
 );
 
 router.put('/:id', 
-  updateUserValidations, 
-  validateBody, 
-  validateMongoID, 
-  validateEmail,  
-  validateRole,
-  updateUser
+  updateUserMiddlewares,
+  updateUserController,
 ); 
 
 router.delete('/:id', 
-  validateJWT, 
-  deleteUserValidations, 
-  validateBody, 
-  validateMongoID, 
-  validatePermissions, 
-  deleteUser
+  deleteUserMiddlewares,
+  deleteUserController
 ); 
 
 export default router;

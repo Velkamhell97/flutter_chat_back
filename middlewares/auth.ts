@@ -1,19 +1,18 @@
-import { checkSchema } from "express-validator";
+import { googleBody, loginBody } from "./body/auth_schemas"
+import { validateLogin } from "./validations/auth_validations"
+import { validateBody, validateJWT } from "./validations/shared_validations"
 
-/**
- * @Login VALIDATIONS
- */
-export const loginValidations = checkSchema({
-  email: {
-    isEmail : {
-      errorMessage: 'Invalid email',
-    },
-  },
+export const renewTokenMiddlewares = [
+  validateJWT
+]
 
-  password: {
-    notEmpty : {
-      errorMessage: 'The password is required',
-      bail: true
-    }, 
-  },
-});
+export const loginMiddlewares = [
+  ...loginBody,
+  validateBody,
+  validateLogin
+]
+
+export const googleSignInMiddlewares = [
+  ...googleBody,
+  validateBody
+]

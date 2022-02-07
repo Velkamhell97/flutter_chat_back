@@ -1,72 +1,34 @@
-import { checkSchema } from "express-validator";
+import { createUserBody, deleteUserBody, updateUserBody } from './body/user_schemas';
+import { validateBody, validateJWT, validatePermissions } from './validations/shared_validations';
+import { validateEmail, validateRole, validateUserID } from './validations/user_validations';
 
-/**
- * @Create VALIDATIONS
- */
-export const createUserValidations = checkSchema({
-  name: {
-    notEmpty : {
-      errorMessage: 'The name is required'
-    }
-  },
+export const getUserByIdMiddlewares = [
+  validateUserID
+]
 
-  email: {
-    isEmail : {
-      errorMessage: 'Invalid email',
-    },
-  },
+export const getUserCategoriesMiddlewares = [
+  validateUserID
+]
 
-  password: {
-    isLength : {
-      errorMessage: 'The password must have at least 7 characters',
-      options: {min: 6}
-    }
-  },
+export const createUserMiddlewares = [
+  ...createUserBody,
+  validateBody,
+  validateEmail,
+  validateRole,
+]
 
-  role: {
-    notEmpty: {
-      errorMessage: 'The Role is required',
-    },
-  }
-});
+export const updateUserMiddlewares = [
+  validateUserID,
+  ...updateUserBody,
+  validateBody,
+  validateEmail,
+  validateRole
+]
 
-/**
- * @Update VALIDATIONS
- */
-export const updateUserValidations = checkSchema({
-  id: {
-    isMongoId: {
-      errorMessage: 'Invalid ID',
-    },
-  },
-
-  email: {
-    optional: {
-      options: {nullable: true},
-    }, 
-    isEmail : {
-      errorMessage: 'Invalid email',
-    },
-  },
-
-  password: {
-    optional: {
-      options: {nullable: true}
-    },
-    isLength : {
-      errorMessage: 'The password must have at least 7 characters',
-      options: {min: 6},
-    }
-  },
-});
-
-/**
- * @Delete VALIDATIONS
- */
-export const deleteUserValidations = checkSchema({
-  id: {
-    isMongoId: {
-      errorMessage: 'Invalid ID',
-    },
-  },
-});
+export const deleteUserMiddlewares = [
+  validateJWT,
+  validateUserID,
+  ...deleteUserBody,
+  validateBody,
+  validatePermissions,
+]

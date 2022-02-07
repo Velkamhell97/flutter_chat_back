@@ -7,7 +7,7 @@ import dbConnection from '../database/config';
 
 import socketController from '../sockets/controller';
 
-import { Auth, Users } from '../routes';
+import { AuthRouter, UsersRouter, CategoriesRouter, RolesRouter, ProductsRouter, SearchsRouter } from '../routes';
 
 class Server {
   private app : Application;
@@ -26,8 +26,12 @@ class Server {
     this.io = new socketIO.Server(this.server);
 
     this.paths = {
-      auth  : '/api/auth',
-      users : '/api/users' 
+      roles      : '/api/roles',
+      auth       : '/api/auth',
+      users      : '/api/users',
+      categories : '/api/categories',
+      products   : '/api/products',
+      searchs    : '/api/searchs'
     } 
     
     this.database();
@@ -52,9 +56,17 @@ class Server {
   }
 
   routes() {
-    this.app.use(this.paths.auth, Auth)
+    this.app.use(this.paths.roles, RolesRouter);
+
+    this.app.use(this.paths.auth, AuthRouter);
     
-    this.app.use(this.paths.users, Users)
+    this.app.use(this.paths.users, UsersRouter);
+
+    this.app.use(this.paths.categories, CategoriesRouter);
+
+    this.app.use(this.paths.products, ProductsRouter);
+
+    this.app.use(this.paths.searchs, SearchsRouter);
   }
 
   sockets() {

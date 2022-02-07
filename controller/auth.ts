@@ -1,14 +1,13 @@
 import { Request, Response } from "express"
 import { Document } from "mongoose";
 
-
 import { generateJWT, googleVerify } from "../helpers";
 import { User } from "../models";
 
 /**
- * @path /auth/ : GET
+ * @path /auth/renew : GET
  */
-export const renewToken = async (req: Request, res: Response) => {
+export const renewTokenController = async (req: Request, res: Response) => {
   const authUser : Document = res.locals.authUser;
   
   await authUser.populate('role', 'role')
@@ -31,9 +30,9 @@ export const renewToken = async (req: Request, res: Response) => {
 /**
  * @path /api/auth/login : POST
  */
-export const login = async (req: Request, res: Response) => {
+export const loginController = async (req: Request, res: Response) => {
   const user : Document = res.locals.user
-
+  
   await user.populate('role', 'role')
   
   generateJWT(user.id).then((token) => {
@@ -53,7 +52,7 @@ export const login = async (req: Request, res: Response) => {
 /**
  * @path /api/auth/google : POST
  */
- export const googleSignIn = async (req: Request, res: Response) => {
+ export const googleSignInController = async (req: Request, res: Response) => {
   const { id_token } = req.body;
 
   try {
