@@ -31,6 +31,9 @@ export const getProductsController = async (_req: Request, res: Response) => {
  export const getProductByIdController = async(_req: Request, res: Response) => {
   const product: Document = res.locals.product;
 
+  //->Toca hacer dos awaits mientras que haciendo la busqueda en la db uno, no se sabe que es mas rapido
+  await (await product.populate('user','name')).populate('category','name');
+
   return res.json({
     msg:'Get product by id successfully',
     product

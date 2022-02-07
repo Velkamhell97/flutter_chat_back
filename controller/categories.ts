@@ -75,10 +75,15 @@ export const getCategoriesController = async(_req: Request, res: Response) => {
     // const { products } = await Category.findById(id).populate({path: 'products', select: 'name'}) as { products:any }
     
     //->Hace otro llamado a la db
-    // const { products } = await Category.findById(id).populate('products') as { products:any }
+    // const { products } = await Category.findById(id).populate({
+    //   //->Con esto filtramos los resultados del populate
+    //   path: 'products', match: { state: true }
+    // }) as { products:any }
 
     //->Igual que en user controller nos ahorramos una lectura a la db pero seguimos sin mostrar los detalles
-    const { products } = await category.populate('products') as { products:any }
+    const { products } = await category.populate({
+      path: 'products', match: { state: true }
+    }) as { products:any }
 
     return res.json({
       msg:'Get categories products successfully',

@@ -57,10 +57,14 @@ export const getUsersController = async (req: Request, res: Response) => {
 
   try {
     //-> Se utiliza el populate virtual del userSchema para obtener sus categorias
-    // const { categories } = await User.findById(req.params.id).populate('categories') as { categories: any };
+    // const { categories } = await User.findById(id).populate({
+    //   path: 'categories', match: { state: true }
+    // }) as { categories: any };
     
     //-> Se trae de la validacion del id (no hace de nuevo la consulta)
-    const { categories } = await user.populate('categories') as { categories: any };
+    const { categories } = await user.populate({
+      path: 'categories', match: { state: true }
+    }) as { categories: any };
 
     res.json({
       msg: 'User categories get successfully',

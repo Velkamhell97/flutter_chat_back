@@ -87,7 +87,9 @@ import { Category, Product } from '../../models';
   const authUser = res.locals.authUser;
   const product = res.locals.product;
 
-  if(product.id != authUser.id){
+  console.log(authUser.id);
+
+  if(product.user != authUser.id){
     return res.status(401).json({
       msg: `Only the author of this product can modify`,
       error: 'Unauthoraized',
