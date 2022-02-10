@@ -1,6 +1,6 @@
 import { model, Schema, Types } from "mongoose";
 
-interface User {
+export interface User {
   name      : string,
   lower     : string,
   email     : string,
@@ -23,9 +23,14 @@ const userSchema = new Schema<User>({
   google   : { type: Boolean, default: false },
   state    : { type: Boolean, default: true },
 }, 
-  //-Las fechas por lo general se formatean en el lado del cliente
-  { timestamps: { createdAt: 'created', updatedAt: 'updated' } }
+  { 
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
+    //->Las fechas por lo general se formatean en el lado del cliente
+    timestamps: { createdAt: 'created', updatedAt: 'updated' } 
+  }
 )
+
 
 userSchema.pre('save', function(this: User, next) {
   const trim = this.name.split(' ').filter(i => i).join(' ');
@@ -54,7 +59,7 @@ userSchema.pre('findOneAndUpdate', function(next) {
 })
 
 userSchema.methods.toJSON = function() {
-  const { __v, _id, password, ...user  } = this.toObject();
+  const { __v, _id, id, password, ...user  } = this.toObject();
   user.uid = _id;
   return user;
 }

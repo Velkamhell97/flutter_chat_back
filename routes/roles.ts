@@ -1,4 +1,8 @@
+/**
+ * @path /api/roles
+ */
 import { NextFunction, Request, Response, Router } from "express";
+
 import { Role } from "../models";
 
 const router = Router();

@@ -1,47 +1,40 @@
-import { NextFunction, Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import { validationResult } from "express-validator/src/validation-result";
 
-import { verifyJWT } from "../../helpers";
+import { catchError, errorTypes } from "../../errors";
 import { Role, User } from "../../models";
+import { UserDocument } from "../../interfaces/users";
+import { verifyJWT } from "../../helpers";
+
 
 /**
- * @Middleware validate jwt header (return auth user)
+ * @middleware validate jwt header (return auth user)
  */
 export const validateJWT = (req : Request, res : Response, next: NextFunction) => {
   const token = req.header('x-token');
 
   if(!token){
-    return res.status(401).json({
-      msg: 'There is not token in request',
-      error: 'Invalid token',
-    })
+    return catchError({type: errorTypes.no_token, res});
   }
 
   verifyJWT(token).then(async (payload) => {
     const authUser = await User.findById(payload.uid);
 
     if(!authUser || authUser.state == false){
-      return res.status(401).json({
-        msg: `Auth user not found in database`,
-        error: 'Invalid token',
-      })
+      return catchError({type: errorTypes.auth_user_not_found, res});
     }
 
     res.locals.authUser = authUser
     
     next();
   }).catch((error) => {
-    console.log(error);
-
-    return res.status(401).json({
-      msg: 'Token expired or unsigned',
-      error: 'Invalid token',
-    })
+    return catchError({error, type: errorTypes.invalid_token, res});
   })
 }
 
+
 /**
- * @Middleware validate body schemas
+ * @middleware validate body schemas
  */
 export const validateBody = (req : Request, res : Response, next: NextFunction) => {
   const errors = validationResult(req);
@@ -53,22 +46,64 @@ export const validateBody = (req : Request, res : Response, next: NextFunction) 
   next();
 }
 
+
 /**
- * @Middleware validate user permissions
+ * @middleware validate user permissions
  */
-export const validatePermissions = async (req : Request, res : Response, next: NextFunction) => {
-  const authUser = res.locals.authUser;
+export const validatePermissions = async (_req : Request, res : Response, next: NextFunction) => {
+  const authUser: UserDocument = res.locals.authUser;
 
   const validRoles = ['ADMIN_ROLE', 'WORKER_ROLE'];
 
   const authUserRole = await Role.findById(authUser.role);
 
   if(!authUserRole || !validRoles.includes(authUserRole.role)){
-    return res.status(401).json({
-      msg: `Only the roles: ${validRoles} can delete, actual role: ${authUserRole!.role}`,
-      error: 'Permissions denied',
+    return catchError({
+      type: errorTypes.permissions,
+      extra: `Only the roles: ${validRoles} can modify registers, actual role: ${authUserRole!.role}`,
+      res
+    });
+  } 
+
+  next();
+}
+
+/**
+ * @middleware validate single file upload
+ */
+export const validateSingleFile = (field: string, extensions: string[]) => async(req: Request, res: Response, next: NextFunction) => {
+  const files = req.files as Express.Multer.File[] | undefined;
+
+  if(!files || !files.length){ //->Si no hay nada pasa
+    return next();
+  } 
+
+  //Si hay mas de uno o ese uno no corresponde al esperado
+  if(files.length > 1 || files[0].fieldname != field){ 
+    // deleteFilesLocal(files.map(f => f.path)); //->Si se almacena en el tmp no es muy util
+
+    return catchError({
+      type: errorTypes.missing_files,
+      extra: `The file \'${field}\' was expected, recibed: ${files.map(f => f.fieldname)}`,
+      res
     })
-  } else {
-    next()
   }
+
+  const file = files[0];
+  const ext = file.originalname.split('.').at(-1)!;
+
+  if(!extensions.includes(ext)){
+    // deleteFilesLocal([file.path]);
+
+    return catchError({
+      type: errorTypes.invalid_file_extension,
+      extra: `The file \'${field}\' have an invalid extension, valid extensions: ${extensions}`,
+      res
+    });
+  } else {
+    //->para no volver a hacer la validacion de los files en el controller, si no envia llegara undefined
+    res.locals.file = file;
+  }
+
+  next();
 }

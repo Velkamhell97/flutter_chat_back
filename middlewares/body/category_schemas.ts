@@ -1,7 +1,9 @@
 import { checkSchema } from "express-validator";
 
+//->Los schemas solo validan campos del body que no necesiten consultas en la db
+
 /**
- * @Schema create category validation schema
+ * @schema create category validation schema
  */
  export const createCategoryBody = checkSchema({
   name: {
@@ -12,7 +14,7 @@ import { checkSchema } from "express-validator";
 });
 
 /**
- * @Schema update category validation schema
+ * @schema update category validation schema
  */
 export const updateCategoryBody = checkSchema({
   id: {
@@ -23,7 +25,7 @@ export const updateCategoryBody = checkSchema({
 });
 
 /**
- * @Schema delete category validation schema
+ * @schema delete category validation schema
  */
 export const deleteCategoryBody = checkSchema({
   id: {

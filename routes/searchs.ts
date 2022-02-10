@@ -1,6 +1,13 @@
+/**
+ * @path /api/searchs
+ */
 import { Router } from "express";
-import { searchController } from "../controller/searchs";
+
+//-Routes Middlewares
 import { searchMiddlewares } from "../middlewares/searchs";
+
+//-Routes Controllers
+import { searchController } from "../controller/searchs";
 
 const router = Router();
 

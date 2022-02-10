@@ -1,6 +1,6 @@
 import { model, Schema, Types } from "mongoose";
 
-interface Category {
+export interface Category {
   name  : string,
   lower : string,
   user  : Types.ObjectId
@@ -15,8 +15,8 @@ const categorySchema = new Schema<Category>({
   //- indx: true --> Se podria hacer un index para que busque mas rapido las categorias por usuario
 }, 
   { 
-    // toJSON: { virtuals: true },
-    // toObject: { virtuals: true },
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
     timestamps: { createdAt: 'created', updatedAt: 'updated' },
     collation: { locale: 'en_US', strength: 1 } //--> case insensitive para el nombre,
   }
@@ -32,7 +32,6 @@ categorySchema.pre('save', function(this: Category, next) {
   next();
 })
 
-//-Recordar que al final que algo quede mal escrito es problema del cliente si el desea dejarlo asi o cambiarlo
 categorySchema.pre('findOneAndUpdate', function(next) {
   let update = {...this.getUpdate()} as { name:string, lower:string };
 

@@ -1,100 +1,96 @@
-import { Request, Response, NextFunction } from 'express';
+import { Response, NextFunction } from 'express';
+
+import { catchError, errorTypes } from '../../errors';
 import { Category, Product } from '../../models';
+import { ProductDocument, ProductsRequest } from '../../interfaces/products';
+import { UserDocument } from '../../interfaces/users';
+
 
 /**
- * @Middleware validate product id passed by params
+ * @middleware validate product id passed by params
  */
- export const validateProductID = async (req : Request, res : Response, next: NextFunction) => {
+ export const validateProductID = async (req: ProductsRequest, res: Response, next: NextFunction) => {
   const { id } = req.params;
 
   const dbProduct = await Product.findById(id);
 
   if(!dbProduct || !dbProduct.state){
-    return res.status(401).json({
-      msg: `The product does not exist in the database`,
-      error: 'Invalid prodcut ID',
-    })
+    return catchError({type: errorTypes.product_not_found, res});
   } else {
-    res.locals.product = dbProduct; //->envia el objeto por los locals
+    res.locals.product = dbProduct;
   }
 
   next();
 }
 
-/**
- * @Middleware validate product name (create and update is valid)
- */
- export const validateProductCategory = async (req : Request, res : Response, next: NextFunction) => {
-  const { category } = req.body as { category: string };
 
-  //->Como tambien se puede no actualizar la categoria se hace esta validacion, si no se envia llega null
-  //-o undefined al controlelr por lo que no se actualiza
+/**
+ * @middleware validate product name (create and update is valid)
+ */
+ export const validateProductCategory = async (req: ProductsRequest, res: Response, next: NextFunction) => {
+  const { category } = req.body;
+
   if(!category){
     return next();
   }
 
-  const trim = category.split(' ').filter(i => i).join(' ').toLowerCase();
+  const trim = category.toString().split(' ').filter(i => i).join(' ').toLowerCase();
 
   const dbCategory = await Category.findOne({lower: trim});
 
   if(!dbCategory){
-    return res.status(401).json({
-      msg: `The cateogry \'${category}\' does not exist in the database`,
-      error: 'Unexisting category',
-    })
+    return catchError({
+      type: errorTypes.category_not_found,
+      extra: `The cateogry with the name \'${category}\' does not exist in the database`,
+      res, 
+    });
   } else {
-    //->Si se quiere enviar el objeto por los locals
-    // res.locals.category = dbCategory
-    //-> se reemplaza el body para que lleve de una vez el id (tambien se podria enviar el objeto)
+    //->se precarga para no hacer otro llamado a la db util en el create y update
     req.body.category = dbCategory.id; 
   }
 
   next();
 }
 
-/**
- * @Middleware validate product name (create and update is valid)
- */
- export const validateProduct = async (req : Request, res : Response, next: NextFunction) => {
-  const { id } = req.params;
-  const { name } = req.body as { name: string };
 
-  //->Cuando se crea y se actualiza se aplica la validacion, si no se actualiza se la salta
+/**
+ * @middleware validate product name (create and update is valid)
+ */
+ export const validateProduct = async (req: ProductsRequest, res: Response, next: NextFunction) => {
+  const { id } = req.params;
+  const { name } = req.body;
+
   if(!name){
     return next();
   }
 
-  //->Formateamos para que haga match mas facil
   const trim = name.split(' ').filter(i => i).join(' ').toLowerCase();
 
-  //->El product es case insensitve lo cual no dejara crear productos similares textualmente
   const dbProduct = await Product.findOne({lower: trim, _id: {$ne: id}});
 
   if(dbProduct){
-    return res.status(401).json({
-      msg: `The product with the name: \'${dbProduct.name}\' already exist`,
-      error: 'Duplicate prodcut',
-    })
+    return catchError({
+      type: errorTypes.duplicate_product,
+      extra: `The product with the name: \'${dbProduct.name}\' already exist`,
+      res, 
+    });
   }
 
   next();
 }
+
 
 /**
- * @Middleware validate product name (create and update is valid)
+ * @middleware validate the author of product
  */
- export const validateProductAuthor = async (_req : Request, res : Response, next: NextFunction) => {
-  const authUser = res.locals.authUser;
-  const product = res.locals.product;
-
-  console.log(authUser.id);
+ export const validateProductAuthor = async (_req : ProductsRequest, res : Response, next: NextFunction) => {
+  const authUser: UserDocument = res.locals.authUser;
+  const product: ProductDocument = res.locals.product;
 
   if(product.user != authUser.id){
-    return res.status(401).json({
-      msg: `Only the author of this product can modify`,
-      error: 'Unauthoraized',
-    })
+    return catchError({type: errorTypes.product_unauthorized, res});
   }
 
   next();
 }
+

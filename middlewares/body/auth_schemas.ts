@@ -1,7 +1,9 @@
 import { checkSchema } from "express-validator";
 
+//->Los schemas solo validan campos del body que no necesiten consultas en la db
+
 /**
- * @Schema login validation schema
+ * @schema login validation schema
  */
 export const loginBody = checkSchema({
   email: {
@@ -18,7 +20,7 @@ export const loginBody = checkSchema({
 });
 
 /**
- * @Schema google sign validation schema
+ * @schema google sign validation schema
  */
  export const googleBody = checkSchema({
   id_token: {

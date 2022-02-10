@@ -3,11 +3,21 @@ import cors from 'cors';
 import http from 'http';
 import socketIO = require('socket.io');
 
+import cloudinary from './cloudinary';
+
 import dbConnection from '../database/config';
 
 import socketController from '../sockets/controller';
 
-import { AuthRouter, UsersRouter, CategoriesRouter, RolesRouter, ProductsRouter, SearchsRouter } from '../routes';
+import { 
+  AuthRouter, 
+  UsersRouter, 
+  CategoriesRouter, 
+  RolesRouter, 
+  ProductsRouter, 
+  SearchsRouter,
+  UploadsRouter
+} from '../routes';
 
 class Server {
   private app : Application;
@@ -31,9 +41,12 @@ class Server {
       users      : '/api/users',
       categories : '/api/categories',
       products   : '/api/products',
-      searchs    : '/api/searchs'
+      searchs    : '/api/searchs',
+      uploads    : '/api/uploads'
     } 
     
+    cloudinary.init();
+
     this.database();
 
     this.middlewares();
@@ -41,6 +54,8 @@ class Server {
     this.routes();
 
     this.sockets();
+
+    
   }
 
   async database(){
@@ -53,6 +68,8 @@ class Server {
     this.app.use(express.json());
 
     this.app.use(express.static('public'))
+
+    // this.app.use(fileUpload({useTempFiles : true, createParentPath:true, tempFileDir : '/tmp/'}));
   }
 
   routes() {
@@ -64,9 +81,11 @@ class Server {
 
     this.app.use(this.paths.categories, CategoriesRouter);
 
-    this.app.use(this.paths.products, ProductsRouter);
+    this.app.use(this.paths.products,  ProductsRouter);
 
     this.app.use(this.paths.searchs, SearchsRouter);
+
+    this.app.use(this.paths.uploads, UploadsRouter);
   }
 
   sockets() {

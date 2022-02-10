@@ -1,8 +1,29 @@
+/**
+ * @path /api/products
+ */
 import { Router } from "express";
-import { createProductController, deleteProductController, getProductByIdController, getProductsByNameController, getProductsController, updateProductController } from "../controller/products";
-import { createProductMiddlewares, deleteProductMiddlewares, getProductyByIdMiddlewares, updateProductMiddlewares } from "../middlewares/products";
+import multer from 'multer';
+
+//-Routes Middlewares
+import { 
+  createProductMiddlewares, 
+  deleteProductMiddlewares, 
+  getProductyByIdMiddlewares, 
+  updateProductMiddlewares 
+} from "../middlewares/products";
+
+//-Routes Controllers
+import { 
+  createProductController, 
+  deleteProductController, 
+  getProductByIdController, 
+  getProductsByNameController, 
+  getProductsController, 
+  updateProductController 
+} from "../controller/products";
 
 const router = Router();
+const upload = multer({dest: '/tmp/'});
 
 router.get('/', getProductsController);
 
@@ -14,11 +35,13 @@ router.get('/:id',
 );
 
 router.post('/',
+  upload.any(),
   createProductMiddlewares,
   createProductController
 )
 
 router.put('/:id',
+  upload.any(),
   updateProductMiddlewares,
   updateProductController
 )

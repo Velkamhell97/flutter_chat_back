@@ -1,28 +1,29 @@
 import { Request, Response } from "express";
-import { isValidObjectId, Document, FilterQuery } from "mongoose";
+import { isValidObjectId, Document } from "mongoose";
+
+import { catchError, errorTypes } from "../errors";
 import { Category, Product, User } from "../models";
 
+
+/**
+ * @controller /api/search/:collection/:query : GET
+ */
 export const searchController = async (req: Request, res: Response) => {
-  //-Aqui ya aseguramos que la colleccion es valida, el query como puede ser un id o una descripcion o un numero
-  //-no se hace la validacion si no encuentra nada solo devolvera vacio
   const { collection, query } = req.params;
 
-  let searchObject = [{}];
-
-  let results: Document[] = [];
-
+  let searchObject = [{}]; //->objeto de busqueda
+  
+  let results : Document[] = []; //->para el tipado
+  
   if(isValidObjectId(query)){
-    //-Si es un id se busca por id
-    searchObject = [{_id: query}];
+    searchObject = [{_id: query}]; //->Busqueda por id
   } else {
-    // const prefix = new RegExp('^' + query.toLowerCase(), 'i');
-    const prefix = new RegExp(query.toLowerCase(), 'i');
+    const prefix = new RegExp(query.toLowerCase(), 'i'); //->Match en cualquier parte
 
-    //-Se cambian los criterios de busqueda segun la categoria, todos con expresiones regulares
     switch(collection.toLowerCase()) {
       case 'users':
         searchObject = [{name: prefix}, {email: prefix}];
-        break
+        break;
       case 'categories':
         searchObject = [{name: prefix}];
         break;
@@ -32,12 +33,11 @@ export const searchController = async (req: Request, res: Response) => {
     }
   }
 
-  //-Dependiendo de la categoria se hace la peticion al modelo correspondiente, todas deben tenre el state en true
   try {
     switch(collection.toLowerCase()) {
       case 'users':
         results = await User.find({$or: [...searchObject], $and: [{state:true}]});
-        break
+        break;
       case 'categories':
         results = await Category.find({$or: [...searchObject], $and: [{state:true}]});
         break;
@@ -46,16 +46,8 @@ export const searchController = async (req: Request, res: Response) => {
         break;
     }
 
-    return res.json({
-      msg:'search successfully',
-      results
-    })
+    return res.json({msg:'search successfully', results});
   } catch (error) {
-    console.log(error);
-
-    return res.status(500).json({
-      msg: 'search failed',
-      error,
-    })
+    return catchError({error, type: errorTypes.search_documents, res});
   }
 }

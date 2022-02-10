@@ -3,7 +3,7 @@ import { checkSchema } from "express-validator/src/middlewares/schema";
 //->Los schemas solo validan campos del body que no necesiten consultas en la db
 
 /**
- * @Schema create user validation schema
+ * @schema create user validation schema
  */
  export const createUserBody = checkSchema({
   name: {
@@ -33,7 +33,7 @@ import { checkSchema } from "express-validator/src/middlewares/schema";
 });
 
 /**
- * @Schema update user validation schema
+ * @schema update user validation schema
  */
 export const updateUserBody = checkSchema({
   id: {
@@ -63,7 +63,7 @@ export const updateUserBody = checkSchema({
 });
 
 /**
- * @Schema delete user validation schema
+ * @schema delete user validation schema
  */
  export const deleteUserBody = checkSchema({
   id: {

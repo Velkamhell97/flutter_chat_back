@@ -4,22 +4,22 @@
 import { Router } from "express";
 
 //-Routes Middlewares
-import { 
+import {
   getCategoryByIdMiddlewares,
   createCategoryMiddlewares,
   updateCategoryMiddlewares,
   deleteCategoryMiddlewares,
-  getCategoriesProductsMiddleware,
+  getCategoriesProductsMiddlewares,
 } from "../middlewares";
 
 //-Routes Controllers
-import { 
-  createCategoryController, 
-  deleteCategoryController, 
-  getCategoriesByNameController, 
-  getCategoriesController, 
-  getCategoriesProductsController, 
-  getCategoryByIdController, 
+import {
+  createCategoryController,
+  deleteCategoryController,
+  getCategoriesByNameController,
+  getCategoriesController,
+  getCategoriesProductsController,
+  getCategoryByIdController,
   updateCategoryController
 } from "../controller/categories";
 
@@ -29,13 +29,13 @@ router.get('/', getCategoriesController);
 
 router.get('/search', getCategoriesByNameController)
 
-router.get('/:id', 
+router.get('/:id',
   getCategoryByIdMiddlewares,
   getCategoryByIdController
 );
 
 router.get('/:id/products',
-  getCategoriesProductsMiddleware,
+  getCategoriesProductsMiddlewares,
   getCategoriesProductsController
 )
 
@@ -44,7 +44,7 @@ router.post('/',
   createCategoryController
 );
 
-router.put('/:id', 
+router.put('/:id',
   updateCategoryMiddlewares,
   updateCategoryController
 );

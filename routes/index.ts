@@ -4,6 +4,7 @@ import CategoriesRouter from './categories';
 import RolesRouter from './roles';
 import ProductsRouter from './products';
 import SearchsRouter from './searchs';
+import UploadsRouter from './uploads';
 
 export {
   AuthRouter,
@@ -11,5 +12,6 @@ export {
   CategoriesRouter,
   RolesRouter,
   ProductsRouter,
-  SearchsRouter
+  SearchsRouter,
+  UploadsRouter
 }

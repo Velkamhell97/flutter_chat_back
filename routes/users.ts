@@ -2,6 +2,7 @@
  * @path /api/users
  */
 import { Router } from "express";
+import multer from 'multer';
 
 //-Routes Middlewares
 import { 
@@ -19,10 +20,12 @@ import {
   deleteUserController,
   getUserByIdController,
   getUserCategoriesController,
-  getUsersController
+  getUsersController,
 } from "../controller/users";
 
 const router = Router();
+
+const upload = multer({dest: '/tmp/'})
 
 router.get('/', getUsersController);
 
@@ -37,11 +40,13 @@ router.get('/:id/categories',
 );
 
 router.post('/', 
+  upload.any(),
   createUserMiddlewares,
   createUserController,
 );
 
 router.put('/:id', 
+  upload.any(),
   updateUserMiddlewares,
   updateUserController,
 ); 

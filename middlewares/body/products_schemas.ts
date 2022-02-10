@@ -1,7 +1,9 @@
 import { checkSchema } from "express-validator/src/middlewares/schema";
 
+//->Los schemas solo validan campos del body que no necesiten consultas en la db
+
 /**
- * @Schema create products validation schema
+ * @schema create products validation schema
  */
  export const createProductBody = checkSchema({
   name: {
@@ -28,7 +30,7 @@ import { checkSchema } from "express-validator/src/middlewares/schema";
 });
 
 /**
- * @Schema update products validation schema
+ * @schema update products validation schema
  */
  export const updateProductBody = checkSchema({
   id: {
@@ -48,7 +50,7 @@ import { checkSchema } from "express-validator/src/middlewares/schema";
 });
 
 /**
- * @Schema update products validation schema
+ * @schema update products validation schema
  */
  export const deleteProductBody = checkSchema({
   id: {

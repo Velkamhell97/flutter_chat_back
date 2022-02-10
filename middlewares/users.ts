@@ -1,6 +1,21 @@
-import { createUserBody, deleteUserBody, updateUserBody } from './body/user_schemas';
-import { validateBody, validateJWT, validatePermissions } from './validations/shared_validations';
-import { validateEmail, validateRole, validateUserID } from './validations/user_validations';
+import { 
+  createUserBody, 
+  deleteUserBody, 
+  updateUserBody 
+} from './body/user_schemas';
+
+import { 
+  validateBody, 
+  validateJWT, 
+  validatePermissions, 
+  validateSingleFile
+} from './validations/shared_validations';
+
+import { 
+  validateEmail, 
+  validateRole, 
+  validateUserID
+} from './validations/user_validations';
 
 export const getUserByIdMiddlewares = [
   validateUserID
@@ -15,6 +30,7 @@ export const createUserMiddlewares = [
   validateBody,
   validateEmail,
   validateRole,
+  validateSingleFile('avatar', ['jpg', 'jpeg', 'png'])
 ]
 
 export const updateUserMiddlewares = [
@@ -22,7 +38,8 @@ export const updateUserMiddlewares = [
   ...updateUserBody,
   validateBody,
   validateEmail,
-  validateRole
+  validateRole,
+  validateSingleFile('avatar', ['jpg', 'jpeg', 'png'])
 ]
 
 export const deleteUserMiddlewares = [

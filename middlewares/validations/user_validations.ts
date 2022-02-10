@@ -1,74 +1,75 @@
-import { Request, Response, NextFunction } from 'express';
+import { Response, NextFunction } from 'express';
+
+import { catchError, errorTypes } from '../../errors';
 import { Role, User } from '../../models';
+import { UsersRequest } from '../../interfaces/users';
+
 
 /**
- * @Middleware validate user id passed by params
+ * @middleware validate user id passed by params
  */
- export const validateUserID = async (req : Request, res : Response, next: NextFunction) => {
+ export const validateUserID = async (req: UsersRequest, res: Response, next: NextFunction) => {
   const { id } = req.params;
 
   const dbUser = await User.findById(id);
 
   if(!dbUser || !dbUser.state){
-    return res.status(401).json({
-      msg: `The user does not exist in the database`,
-      error: 'Invalid user ID',
-    })
+    return catchError({type: errorTypes.user_not_found, res});
   } else {
-    //->Se devuelve directamente al controlador (no vuelve a hacer la consulta del id)
-    res.locals.user = dbUser; 
+    res.locals.user = dbUser;  //->util para los controllers que tengan el id en la ruta
   }
 
   next();
 }
 
+
 /**
- * @Middleware validate user email (create and update valid)
+ * @middleware validate user email (create and update valid)
  */
- export const validateEmail = async (req : Request, res : Response, next: NextFunction) => {
+ export const validateEmail = async (req: UsersRequest, res: Response, next: NextFunction) => {
   const { id } = req.params;
   const { email } = req.body;
 
-  //->Si se crea o se actualiza se verifica que este disponible, si no se actualiza salta la validacion
   if(!email){
     return next();
   }
 
-  //->Que haya un email igual en la db y que su id sea diferente al que se actualiza
-  const dbUser = await User.findOne({email, _id: {$ne: id}})
+  const dbUser = await User.findOne({email, _id: {$ne: id}});
 
   if(dbUser){
-    return res.status(401).json({
-      msg: `The email ${email} is already in use`,
-      error: 'Duplicate email',
-    })
+    return catchError({
+      type: errorTypes.duplicate_email,
+      extra: `The email ${email} is already in use`,
+      res
+    });
   }
 
   next();
 }
 
+
 /**
- * @Middleware validate user role (create and update valid)
+ * @middleware validate user role (create and update valid)
  */
-export const validateRole = async (req : Request, res : Response, next: NextFunction) => {
+export const validateRole = async (req: UsersRequest, res: Response, next: NextFunction) => {
   const { role } = req.body;
 
-  //->Si se crea o actualiza el role se activa la validacion, si no se actualiza se salta la validacion
   if(!role) {
     return next();
   }
-  
+
   const dbRole = await Role.findOne({role});
 
   if(!dbRole){
-    return res.status(401).json({
-      msg: `The role ${role} does not exist`,
-      error: 'Invalid role',
-    })
+    return catchError({
+      type: errorTypes.role_not_found,
+      extra: `The role with the name \'${role}\' does not exist in the database`,
+      res
+    });
   } else {
-    //->Como se guarda el id del role, reemplaza el texto por el id directamente y no se desestructura en el controller
+    //->lo setea al body para ahorra una llamada al db, create y update
     req.body.role = dbRole.id;
-
-    next();
   }
+
+  next();
 }
