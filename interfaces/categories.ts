@@ -8,9 +8,8 @@ export interface CategoriesRequest extends Request {
 }
 
 interface CategoriesBody {
-  name ?: string,
-  state ?: boolean,
-  user ?: Types.ObjectId | string
+  name : string,
+  user : Types.ObjectId | string
   // [rest: string] : string | boolean | undefined
 }
 

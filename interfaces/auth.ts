@@ -5,7 +5,7 @@ export interface AuthRequest extends Request {
 }
 
 interface AuthBody {
-  email : string,
+  email    : string,
   password : string
 }
 

@@ -1,3 +1,4 @@
+import { check } from 'express-validator';
 import { 
   createCategoryBody, 
   deleteCategoryBody, 
@@ -17,10 +18,14 @@ import {
 } from './validations/shared_validations';
 
 export const getCategoryByIdMiddlewares = [
+  check('id', 'Invalid ID').isMongoId(),
+  validateBody,
   validateCategoryID
 ]
 
 export const getCategoriesProductsMiddlewares = [
+  check('id', 'Invalid ID').isMongoId(),
+  validateBody,
   validateCategoryID
 ]
 

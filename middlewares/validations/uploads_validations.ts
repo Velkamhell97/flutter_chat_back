@@ -19,13 +19,11 @@ import { catchError, errorTypes } from "../../errors";
   //->Valida que todos los fields vengan 
   const fileNames = files.map(f => f.fieldname);
   const containFiles = fields.every(file => fileNames.includes(file))
-
-  const paths = files.map(f => f.path);
+  // const paths = files.map(f => f.path);
   
   //->Si no vienen todos los campos o si vienen mas de los requeridos 
   if (!containFiles || files.length > fields.length) {
     // deleteFilesLocal(paths);
-
     return catchError({
       type: errorTypes.missing_files,
       extra: `The folowing files were expected: ${fields}, recibed: ${fileNames}`,
@@ -47,7 +45,6 @@ import { catchError, errorTypes } from "../../errors";
   
   if(extensionError){
     // deleteFilesLocal(paths);
-
     return catchError({
       type: errorTypes.invalid_file_extension,
       extra: extensionError,

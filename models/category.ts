@@ -15,8 +15,8 @@ const categorySchema = new Schema<Category>({
   //- indx: true --> Se podria hacer un index para que busque mas rapido las categorias por usuario
 }, 
   { 
-    toJSON: { virtuals: true },
-    toObject: { virtuals: true },
+    // toJSON: { virtuals: true }, //-por alguna razon esto agrega una propiedad id a la respuesta json
+    // toObject: { virtuals: true },
     timestamps: { createdAt: 'created', updatedAt: 'updated' },
     collation: { locale: 'en_US', strength: 1 } //--> case insensitive para el nombre,
   }
@@ -33,7 +33,7 @@ categorySchema.pre('save', function(this: Category, next) {
 })
 
 categorySchema.pre('findOneAndUpdate', function(next) {
-  let update = {...this.getUpdate()} as { name:string, lower:string };
+  let update = this.getUpdate() as Category;
 
   if(!update.name){
     return next()
@@ -42,10 +42,7 @@ categorySchema.pre('findOneAndUpdate', function(next) {
   const trim = update.name.split(' ').filter(i => i).join(' ');
 
   update.name  = trim.charAt(0).toUpperCase() + trim.substring(1).toLowerCase();
-  // this.lower = this.name.toLowerCase().normalize("NFD").replace(/\p{Diacritic}/gu, "");
   update.lower = update.name.toLowerCase();
-
-  this.setUpdate(update);
 
   next();
 })
@@ -58,7 +55,7 @@ categorySchema.methods.toJSON = function() {
 categorySchema.virtual('products', {
   ref:'Product',
   localField:'_id',
-  foreignField: 'category'
+  foreignField: 'category',
 })
 
 const categoryModel = model<Category>('Category', categorySchema);

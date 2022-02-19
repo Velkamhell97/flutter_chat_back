@@ -43,7 +43,7 @@ export const getCategoriesController = async(_req: CategoriesRequest, res: Respo
  */
  export const getCategoryByIdController = async(_req: CategoriesRequest, res: Response) => {
   const category: CategoryDocument = res.locals.category;
-  await category.populate('user', 'name');
+  await category.populate("user", "name")
 
   return res.json({msg:'Get category by id successfully', category});
 }
@@ -73,7 +73,7 @@ export const getCategoriesController = async(_req: CategoriesRequest, res: Respo
  * @controller /api/categories/ : POST
  */
 export const createCategoryController = async(req: CategoriesRequest, res: Response) => {
-  const { state,...categoryData } = req.body;
+  const categoryData = req.body;
   const authUser: UserDocument = res.locals.authUser;
 
   categoryData.user = authUser.id;
@@ -94,10 +94,13 @@ export const createCategoryController = async(req: CategoriesRequest, res: Respo
  */
 export const updateCategoryController = async(req: CategoriesRequest, res: Response) => {
   const { id } = req.params;
-  const { state, user, ...categoryData } = req.body;
+  const { user, ...categoryData } = req.body;
+
+  // const category: CategoryDocument = res.locals.category;
 
   try {
     //->Mejor que con el updateOne y el save (con locals.category), solo se sube el name
+    // category?.updateOne(categoryData, {new:true});
     const category = await Category.findByIdAndUpdate(id, categoryData, {new:true}).populate('user', 'name');
 
     return res.json({msg: 'Category updated successfully', category});

@@ -24,14 +24,14 @@ export const validateJWT = (req : Request, res : Response, next: NextFunction) =
       return catchError({type: errorTypes.auth_user_not_found, res});
     }
 
-    res.locals.authUser = authUser
+    res.locals.authUser = authUser;
     
     next();
   }).catch((error) => {
     return catchError({error, type: errorTypes.invalid_token, res});
   })
 }
-
+ 
 
 /**
  * @middleware validate body schemas

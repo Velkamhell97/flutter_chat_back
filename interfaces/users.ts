@@ -8,11 +8,11 @@ export interface UsersRequest extends Request {
 }
 
 interface UsersBody {
-  email ?: string,
-  password ?: string,
-  role ?: string,
-  state ?: boolean,
-  avatar ?: string
+  name      : string,
+  email     : string,
+  password  : string,
+  role      : string,
+  avatar   ?: string
   // [rest: string] : string | boolean | undefined
 }
 

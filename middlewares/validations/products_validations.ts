@@ -66,7 +66,13 @@ import { UserDocument } from '../../interfaces/users';
 
   const trim = name.split(' ').filter(i => i).join(' ').toLowerCase();
 
-  const dbProduct = await Product.findOne({lower: trim, _id: {$ne: id}});
+  //-Se ahora la segunda comparacion, no se sabe que sea mas rapido
+  // const dbProduct = await Product.findOne({lower: trim, _id: {$ne: id}});
+  const dbProduct = await Product.findOne({lower: trim});
+
+  if(dbProduct && dbProduct.id == id){
+    return next();
+  }
 
   if(dbProduct){
     return catchError({

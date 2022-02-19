@@ -35,8 +35,12 @@ export const validateCategory = async (req : CategoriesRequest, res : Response, 
 
   //->Se formatea la informacion, para que haga match con el collate, deberia ser trabajo del front
   const trim = name.split(' ').filter(i => i).join(' ').toLowerCase();
-
   const dbCategory = await Category.findOne({lower: trim, _id: {$ne: id}});
+
+  //->Otra forma de validar que la validacion del unique no choque con el propio elemento a actualizar
+  // if(dbCategory && dbCategory.id == id){
+  //   return next();
+  // }
 
   if(dbCategory){
     return catchError({

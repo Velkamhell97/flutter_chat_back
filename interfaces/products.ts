@@ -8,14 +8,13 @@ export interface ProductsRequest extends Request {
 }
 
 interface ProductsBody {
-  name        ?: string,
-  user        ?: Types.ObjectId | string,
+  name         : string,
+  user         : Types.ObjectId | string,
   price       ?: number,
   img         ?: string,
-  category    ?: Types.ObjectId | string,
+  category     : Types.ObjectId | string,
   description ?: string,
   available   ?: boolean,
-  state       ?: boolean,
   // [rest: string] : string | boolean | undefined
 }
 

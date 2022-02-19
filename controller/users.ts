@@ -18,7 +18,8 @@ export const getUsersController = async (req: UsersRequest, res: Response) => {
   try {
     const [total, users] = await Promise.all([
       User.countDocuments(query),
-      User.find(query).populate('role','role').skip(Number(from)).limit(Number(limit))
+      //-el populate por defecto trae el id, este se puede eliminar con la sintaxis -{field}
+      User.find(query).populate('role', 'role -_id').skip(Number(from)).limit(Number(limit))
     ]);
   
     res.json({msg: 'Users get successfully', total, users, count: users.length});
@@ -33,7 +34,7 @@ export const getUsersController = async (req: UsersRequest, res: Response) => {
  */
  export const getUserByIdController = async (_req: UsersRequest, res: Response) => {
   const user: UserDocument = res.locals.user;
-  await user.populate('role', 'role');
+  await user.populate('role', 'role -_id')
 
   res.json({msg: 'Users by ID get successfully', user});
 }
@@ -46,7 +47,9 @@ export const getUsersController = async (req: UsersRequest, res: Response) => {
   const user: UserDocument = res.locals.user;
 
   try {
-    const { categories } = await user.populate({path: 'categories', match: {state: true}}) as any;
+    //-Al parecer para eliminar solo el _id se debe agregar otra propiedad, es decir no debe quedar solo: select: '-__v -_id'
+    //-y para eliminar el usuario, solo se puede si se especifican el resto de parametros excepto: select: 'name -user'
+    const { categories } = await user.populate({path: 'categories',match: {state: true}}) as any;
     
     res.json({msg: 'User categories get successfully', categories});
   } catch (error) {
@@ -59,20 +62,18 @@ export const getUsersController = async (req: UsersRequest, res: Response) => {
  * @controller /api/users/ : POST
  */
 export const createUserController = async (req: UsersRequest, res: Response) => {
-  const { state,...userData } = req.body;
+  const userData = req.body;
   
   const salt = bcryptjs.genSaltSync();
   const hashPassword = bcryptjs.hashSync(userData.password!, salt);
   userData.password = hashPassword;
 
   const user = new User(userData); 
-
   const avatar: Express.Multer.File | undefined = res.locals.file;
   
   if(avatar){
     try {
       const response = await cloudinary.uploadImage({path: avatar.path, filename: user.id, folder: 'users'});
-      
       // deleteFilesLocal([avatar.path]) -> Borra archivos (no muy eficiente si estan en temp)
       user.avatar = response.secure_url;
     } catch (error) { 
@@ -82,7 +83,7 @@ export const createUserController = async (req: UsersRequest, res: Response) => 
 
   try {
     //->El role ya estaba cargado en el body por el middleware, tambien en el update
-    await (await user.save()).populate('role', 'role');
+    await (await user.save()).populate('role', 'role -_id');
 
     generateJWT(user.id).then((token) => {
       return res.json({msg: 'User saved successfully', user, token});
@@ -99,7 +100,7 @@ export const createUserController = async (req: UsersRequest, res: Response) => 
  */
 export const updateUserController = async (req: UsersRequest, res: Response) => {
   const { id } = req.params;
-  const { state, ...userData } = req.body;
+  const userData = req.body;
 
   if(userData.password){
     const salt = bcryptjs.genSaltSync();
@@ -120,7 +121,7 @@ export const updateUserController = async (req: UsersRequest, res: Response) => 
 
   try {
     //->No necesaria transaccion ya que solo es una operacion a la db o se hace o falla (para create y update)
-    const user = await User.findByIdAndUpdate(id, userData, {new: true}).populate('role', 'role');
+    const user = await User.findByIdAndUpdate(id, userData, {new: true}).populate('role', 'role -_id');
 
     return res.json({msg: 'User update successfully', user});
   } catch (error) {
@@ -136,7 +137,7 @@ export const deleteUserController = async (req: UsersRequest, res: Response) => 
   const { id } = req.params;
 
   try {
-    const user = await User.findByIdAndUpdate(id, {state: false}, {new: true}).populate('role', 'role');
+    const user = await User.findByIdAndUpdate(id, {state: false}, {new: true}).populate('role', 'role -_id');
 
     return res.json({msg: 'User delete successfully', user});
   } catch (error) {

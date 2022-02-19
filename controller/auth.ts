@@ -50,14 +50,12 @@ export const loginController = async (_req: AuthRequest, res: Response) => {
     if(!user) {
       //->passwords menores a 6 letras no pasan el login normal solo valido por google
       user = new User({name, email, password:'less6', avatar: picture, google: true, role: "61fb0e905b08de3f3579fd0b"});
-      await user.save();
+      await (await user.save()).populate('role', 'role');
     }
 
     if(!user.state) {
       return catchError({error: user, type:errorTypes.user_blocked, res});
     }
-
-    await user.populate('role', 'role');
 
     generateJWT(user.id).then((token) => {
       return res.json({msg: 'Google sign in successfully', user, token})

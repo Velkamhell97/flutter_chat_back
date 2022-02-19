@@ -6,16 +6,17 @@ import { ProductDocument, ProductsRequest } from "../interfaces/products";
 import { UserDocument } from "../interfaces/users";
 import cloudinary from "../models/cloudinary";
 
+
 /**
  * @controller /api/products/ : GET
  */
 export const getProductsController = async (_req: ProductsRequest, res: Response) => {
   try {
-    const categories = await Product.find({state: true})
+    const products = await Product.find({state: true})
     .populate('user', 'name')
     .populate('category','name');
 
-    return res.json({msg:'Get all products successfully', categories});
+    return res.json({msg:'Get all products successfully', products});
   } catch (error) {
     return catchError({error, type: errorTypes.get_products, res});
   }
@@ -45,7 +46,8 @@ export const getProductsController = async (_req: ProductsRequest, res: Response
  */
  export const getProductByIdController = async(_req: ProductsRequest, res: Response) => {
   const product: ProductDocument = res.locals.product;
-  await (await product.populate('user','name')).populate('category','name');
+  await product.populate('user', 'name')
+  await product.populate('category','name');
 
   return res.json({msg:'Get product by id successfully', product});
 }
@@ -55,11 +57,10 @@ export const getProductsController = async (_req: ProductsRequest, res: Response
  * @controller /api/products/ : POST
  */
  export const createProductController = async (req: ProductsRequest, res: Response) => {
-  const { state, ...productData } = req.body;
-
+  const productData = req.body;
   const authUser: UserDocument = res.locals.authUser;
-  productData.user = authUser.id;
 
+  productData.user = authUser.id;
   const product  = new Product(productData);
 
   const img: Express.Multer.File | undefined = res.locals.file;
@@ -91,10 +92,10 @@ export const getProductsController = async (_req: ProductsRequest, res: Response
  */
  export const updateProductController = async (req: ProductsRequest, res: Response) => {
   const { id } = req.params;
-  const { state, user, ...productData } = req.body;
+  const { user, ...productData } = req.body;
 
   const img: Express.Multer.File | undefined = res.locals.file;
-  
+
   if(img){
     try {
       const response = await cloudinary.uploadImage({path: img.path, filename: id, folder: 'products'});

@@ -24,13 +24,12 @@ const userSchema = new Schema<User>({
   state    : { type: Boolean, default: true },
 }, 
   { 
-    toJSON: { virtuals: true },
-    toObject: { virtuals: true },
+    // toJSON: { virtuals: true },
+    // toObject: { virtuals: true },
     //->Las fechas por lo general se formatean en el lado del cliente
     timestamps: { createdAt: 'created', updatedAt: 'updated' } 
   }
 )
-
 
 userSchema.pre('save', function(this: User, next) {
   const trim = this.name.split(' ').filter(i => i).join(' ');
@@ -41,11 +40,12 @@ userSchema.pre('save', function(this: User, next) {
   next();
 })
 
-userSchema.pre('findOneAndUpdate', function(next) {
-  let update = {...this.getUpdate()} as { name:string, lower:string };
+userSchema.pre('findOneAndUpdate', function( next) {
+  //El objeto contiene los datos a actualizar
+  let update = this.getUpdate() as User;
 
   if(!update.name){
-    next();
+    return next();
   }
 
   const trim = update.name.split(' ').filter(i => i).join(' ');
@@ -53,13 +53,13 @@ userSchema.pre('findOneAndUpdate', function(next) {
   update.name  = trim.replace(/(^\w|\s\w)(\S*)/g, (_,m1,m2) => m1.toUpperCase()+m2.toLowerCase());
   update.lower = update.name.toLowerCase();
 
-  this.setUpdate(update);
+  // this.setUpdate(update); //-Al parecer no es necesario
 
   next();
 })
 
 userSchema.methods.toJSON = function() {
-  const { __v, _id, id, password, ...user  } = this.toObject();
+  const { __v, _id, password, ...user  } = this.toObject();
   user.uid = _id;
   return user;
 }

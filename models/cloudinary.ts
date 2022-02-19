@@ -15,6 +15,7 @@ class Cloudinary {
   }
 
   init(){
+    //-se debe instanciar la clase luego de que se creen las variables de entorno
     // this.cloudinary.config(process.env.CLOUDINARY_URL!); //->No funciono con la variable de entorno
     this.cloudinary.config({
       cloud_name: process.env.CLOUDINARY_CLOUD,

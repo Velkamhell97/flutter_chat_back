@@ -16,7 +16,7 @@ const productSchema = new Schema<Product>({
   name        : { type: String, required: [true, 'The name is required'], unique: true },
   lower       : String,
   user        : { type: Schema.Types.ObjectId, ref: 'User', required: [true, 'The user is required'] },
-  price       : { type: Number, required: [true, 'The price is required'] },
+  price       : { type: Number, required: [true, 'The price is required'], default: 0.0 },
   img         : String,
   category    : { type: Schema.Types.ObjectId, ref: 'Category', required: [true, 'The category is required'] },
   description : { type: String, default: 'Sin descripcion' },
@@ -38,7 +38,7 @@ productSchema.pre('save', function(this: Product, next) {
 })
 
 productSchema.pre('findOneAndUpdate', function(next) {
-  let update = {...this.getUpdate()} as { name:string, lower:string };
+  let update = this.getUpdate() as Product;
 
   if(!update.name){
     return next()
@@ -47,10 +47,7 @@ productSchema.pre('findOneAndUpdate', function(next) {
   const trim = update.name.split(' ').filter(i => i).join(' ');
 
   update.name  = trim.charAt(0).toUpperCase() + trim.substring(1).toLowerCase();
-  // this.lower = this.name.toLowerCase().normalize("NFD").replace(/\p{Diacritic}/gu, "");
   update.lower = update.name.toLowerCase();
-
-  this.setUpdate(update);
 
   next();
 })
