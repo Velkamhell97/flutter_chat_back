@@ -4,6 +4,7 @@ export interface AppError {
   code : number,
   name ?: string
   msg ?: string,
+  extra ?: string
 
   [futureKey:string] : any
 }
@@ -20,7 +21,7 @@ export const catchError = ({type, error, res, ...rest} : ErrorParams) => {
     console.log(error);
   }
 
-  return res.status(type.code).json({error, details:type, rest})
+  return res.status(type.code).json({error: error ?? type.name, details: {...type, ...rest},})
 }
 
 type ErrorTypes = 
@@ -71,6 +72,11 @@ type ErrorTypes =
 | "no_files_upload"
 | "missing_files"
 | "move_local_files"
+| "form_error"
+| "email_not_found"
+| "generate_reset_token"
+| "send_token_mail"
+| "invalid_reset_token"
 
 export const errorTypes: Record<ErrorTypes, AppError> ={
   //------------------------------User Errors -----------------------------//
@@ -340,4 +346,34 @@ export const errorTypes: Record<ErrorTypes, AppError> ={
     name: 'MOVE_LOCAL_FILES_ERROR',
     code: 500, 
   },
+
+  form_error: { 
+    msg: 'There was error while processing form data',
+    name: 'FORM_ERROR',
+    code: 400, 
+  },
+
+  email_not_found: {
+    msg: 'Email not found in the database or was delete',
+    name: "EMAIL_NOT_FOUND",
+    code: 400
+  },
+
+  generate_reset_token: {
+    msg: 'There was error while generate the reset token',
+    name: 'GENERATE_RESET_TOKEN_ERROR',
+    code: 500
+  },
+  
+  send_token_mail: {
+    msg: 'There was error while sending the mail to reset password',
+    name: 'SEND_TOKEN_MAIL_ERROR',
+    code: 500
+  },
+
+  invalid_reset_token: {
+    msg: 'The reset token is invalid or expired',
+    name: 'INVALID_RESET_TOKEN_ERROR',
+    code: 400
+  }
 } 

@@ -19,7 +19,7 @@ export const getUsersController = async (req: UsersRequest, res: Response) => {
     const [total, users] = await Promise.all([
       User.countDocuments(query),
       //-el populate por defecto trae el id, este se puede eliminar con la sintaxis -{field}
-      User.find(query).populate('role', 'role -_id').skip(Number(from)).limit(Number(limit))
+      User.find(query).populate('role', 'name -_id').skip(Number(from)).limit(Number(limit))
     ]);
   
     res.json({msg: 'Users get successfully', total, users, count: users.length});
@@ -34,7 +34,7 @@ export const getUsersController = async (req: UsersRequest, res: Response) => {
  */
  export const getUserByIdController = async (_req: UsersRequest, res: Response) => {
   const user: UserDocument = res.locals.user;
-  await user.populate('role', 'role -_id')
+  await user.populate('role', 'name -_id')
 
   res.json({msg: 'Users by ID get successfully', user});
 }
@@ -70,7 +70,7 @@ export const createUserController = async (req: UsersRequest, res: Response) => 
 
   const user = new User(userData); 
   const avatar: Express.Multer.File | undefined = res.locals.file;
-  
+
   if(avatar){
     try {
       const response = await cloudinary.uploadImage({path: avatar.path, filename: user.id, folder: 'users'});
@@ -83,8 +83,10 @@ export const createUserController = async (req: UsersRequest, res: Response) => 
 
   try {
     //->El role ya estaba cargado en el body por el middleware, tambien en el update
-    await (await user.save()).populate('role', 'role -_id');
+    await (await user.save()).populate('role', 'name');
 
+    //Se podria hacer con await ya que el reject se toma como un throw, pero el error
+    //no se podria diferenciar
     generateJWT(user.id).then((token) => {
       return res.json({msg: 'User saved successfully', user, token});
     }).catch((error) => {
@@ -121,7 +123,7 @@ export const updateUserController = async (req: UsersRequest, res: Response) => 
 
   try {
     //->No necesaria transaccion ya que solo es una operacion a la db o se hace o falla (para create y update)
-    const user = await User.findByIdAndUpdate(id, userData, {new: true}).populate('role', 'role -_id');
+    const user = await User.findByIdAndUpdate(id, userData, {new: true}).populate('role', 'name');
 
     return res.json({msg: 'User update successfully', user});
   } catch (error) {
@@ -137,7 +139,7 @@ export const deleteUserController = async (req: UsersRequest, res: Response) => 
   const { id } = req.params;
 
   try {
-    const user = await User.findByIdAndUpdate(id, {state: false}, {new: true}).populate('role', 'role -_id');
+    const user = await User.findByIdAndUpdate(id, {state: false}, {new: true}).populate('role', 'name');
 
     return res.json({msg: 'User delete successfully', user});
   } catch (error) {

@@ -11,7 +11,7 @@ router.post('/', async (req : Request, res : Response, next: NextFunction) => {
   const { name } = req.body;
   
   try {
-    const role = new Role({role: name});
+    const role = new Role({name});
     
     await role.save();
 

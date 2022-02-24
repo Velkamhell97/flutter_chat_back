@@ -1,11 +1,17 @@
 import { model, Schema } from "mongoose";
 
 export interface Role {
-  role: string
+  name: string
 }
 
 const roleSchema = new Schema<Role>({
-  role: { type: String, required: [true, 'El rol es obligatorio'] }
+  name: { type: String, required: [true, 'El rol es obligatorio'] }
+})
+
+roleSchema.pre('save', function(this: Role, next) {
+  const trim = this.name.split(' ').filter(i => i).join(' ');
+  this.name  = trim.toUpperCase();
+  next();
 })
 
 roleSchema.methods.toJSON = function() {

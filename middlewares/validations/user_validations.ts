@@ -58,7 +58,7 @@ export const validateRole = async (req: UsersRequest, res: Response, next: NextF
     return next();
   }
 
-  const dbRole = await Role.findOne({role});
+  const dbRole = await Role.findOne({name:role});
 
   if(!dbRole){
     return catchError({

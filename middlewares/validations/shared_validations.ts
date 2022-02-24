@@ -40,7 +40,9 @@ export const validateBody = (req : Request, res : Response, next: NextFunction) 
   const errors = validationResult(req);
   
   if(!errors.isEmpty()) {
-    return res.status(400).json(errors)
+    const firstError = errors.array({onlyFirstError: true})[0];
+    return catchError({error: firstError.msg, type: errorTypes.form_error, res});
+    // return res.status(400).json(errors)
   }
 
   next();
@@ -57,10 +59,10 @@ export const validatePermissions = async (_req : Request, res : Response, next: 
 
   const authUserRole = await Role.findById(authUser.role);
 
-  if(!authUserRole || !validRoles.includes(authUserRole.role)){
+  if(!authUserRole || !validRoles.includes(authUserRole.name)){
     return catchError({
       type: errorTypes.permissions,
-      extra: `Only the roles: ${validRoles} can modify registers, actual role: ${authUserRole!.role}`,
+      extra: `Only the roles: ${validRoles} can modify registers, actual role: ${authUserRole!.name}`,
       res
     });
   } 

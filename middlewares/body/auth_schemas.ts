@@ -20,6 +20,36 @@ export const loginBody = checkSchema({
 });
 
 /**
+ * @schema reset password validation schema
+ */
+ export const sendResetTokenBody = checkSchema({
+  email: {
+    isEmail : {
+      errorMessage: 'Invalid email',
+    },
+  },
+});
+
+/**
+ * @schema reset password validation schema
+ */
+ export const resetPasswordBody = checkSchema({
+  resetToken: {
+    isLength: {
+      errorMessage: 'The reset password token is a 5 character token',
+      options: {min: 5, max: 5}
+    }
+  },
+
+  password: {
+    isLength : {
+      errorMessage: 'The password must have at least 7 characters',
+      options: {min: 6}
+    }
+  },
+});
+
+/**
  * @schema google sign validation schema
  */
  export const googleBody = checkSchema({

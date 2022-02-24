@@ -8,13 +8,17 @@ import {
   renewTokenMiddlewares,
   loginMiddlewares,
   googleSignInMiddlewares,
+  sendResetTokenMiddlewares,
+  resetPasswordMiddlewares,
 } from '../middlewares';
 
 //-Routes Controllers
 import { 
   googleSignInController,
   loginController, 
-  renewTokenController 
+  renewTokenController, 
+  resetPasswordController,
+  sendResetTokenController,
 } from "../controller/auth";
 
 const router = Router();
@@ -27,6 +31,16 @@ router.get('/renew',
 router.post('/login', 
   loginMiddlewares,
   loginController
+); 
+
+router.post('/send-reset-token', 
+  sendResetTokenMiddlewares,
+  sendResetTokenController
+); 
+
+router.post('/reset-password', 
+  resetPasswordMiddlewares,
+  resetPasswordController
 ); 
 
 router.post('/google', 

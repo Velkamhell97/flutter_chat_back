@@ -19,7 +19,7 @@ export const generateJWT = (uid : string) => {
     const payload : JwtPayload = { uid };
 
     jwt.sign(payload, process.env.SECRETORPRIVATEKEY!, {
-      expiresIn: '4h'
+      expiresIn: '24h'
     }, (error, token) => {
       if(error){
         return reject(error);
@@ -62,6 +62,35 @@ export const googleVerify = async (token: string) : Promise<TokenPayload> => {
   return payload!;
 }
 
+export const shuffle = <T>(array : Array<T>): Array<T> => {
+let currentIndex = array.length,  randomIndex;
+
+  // While there remain elements to shuffle...
+  while (currentIndex != 0) {
+
+    // Pick a remaining element...
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex--;
+
+    // And swap it with the current element.
+    [array[currentIndex], array[randomIndex]] = [
+      array[randomIndex], array[currentIndex]];
+  }
+
+  return array;
+}
+
+export const generateResetToken = (length:number):string => {
+  let result           = '';
+  const characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  const charactersLength = characters.length;
+  
+  for ( var i = 0; i < length; i++ ) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+ 
+  return result;
+}
 
 /**
  * @helper save file in server memory (express-fileupload)
