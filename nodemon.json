@@ -1,0 +1,3 @@
+{
+  "ignore": ["data/ticket_data.json", "dist/*"]
+}
