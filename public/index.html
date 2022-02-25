@@ -5,33 +5,55 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Chat Back</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 </head>
 <body>
-  <h1>Google Sign in</h1>
-  <hr>
+  
 
-    <div id="g_id_onload"
+    <div class="container-fluid">
+      <h1>Google Sign in</h1>
+      <hr>
+
+      <div id="g_id_onload"
         data-client_id="393915894706-9oqbduqen8u47gi3pcehbmu6pv153i65.apps.googleusercontent.com"
         data-auto_prompt="false"
         data-callback="handleCredentialResponse">
-    </div>
-    <div class="g_id_signin"
+      </div>
+
+      <div class="g_id_signin"
         data-type="standard"
         data-size="large"
         data-theme="outline"
         data-text="sign_in_with"
         data-shape="rectangular"
         data-logo_alignment="left">
-    </div>
+      </div>
 
-    <div style="margin-top: 20px;">
-      <button id="google_signout" style="padding: 10px;  width: 240px;">
-        Sign out
-      </button>
-    </div>
+      <div style="margin-top: 20px;">
+        <button id="google_signout" style="padding: 10px;  width: 240px;">
+          Sign out
+        </button>
+      </div>
 
-    
-  
+
+      <p>
+        Server Status: 
+        <span id="lblOnline" class="text-success">Online</span>
+        <span id="lblOffline" class="text-danger">Offline</span>
+      </p>
+
+      <div class="row">
+        <div class="col">
+          <input type="text" id="inputMsg" class="form-control">
+        </div>
+        <div class="col">
+          <button id="sendBtn" class="btn btn-primary">
+            Enviar
+          </button>
+        </div>
+      </div>
+    </div>
 
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <script src="./socket.io/socket.io.js"></script>
