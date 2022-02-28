@@ -9,6 +9,8 @@ import { CloudinaryUploadedFile, CustomUploadedFile, LocalUploadedFile } from '.
 import { JwtPayload } from '../interfaces/jwt_payload';
 import cloudinary from '../models/cloudinary';
 import { catchError, errorTypes } from '../errors';
+import { User } from '../models';
+import { UserDocument } from '../interfaces/users';
 
 
 /**
@@ -44,6 +46,20 @@ export const verifyJWT = (token: string) => {
         }
     })
   })
+}
+
+/**
+ * @helper verify jwt with jwt token and private key
+ */
+ export const verifyJWTUser = async (token: string): Promise<UserDocument> => {
+  const { uid } = await verifyJWT(token);
+  const user = await User.findById(uid);
+  
+  if(!user || !user.state){
+    throw new Error('User not found in database or was deleted');
+  }
+
+  return user;
 }
 
 /**

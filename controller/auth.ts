@@ -119,13 +119,14 @@ export const loginController = async (_req: AuthRequest, res: Response) => {
     }
 
     if(!user.state) {
-      return catchError({error: user, type:errorTypes.user_blocked, res});
+      //-Añadimos el email para el logout en el frontend
+      return catchError({error: user, type:errorTypes.user_blocked, extra: email, res});
     }
 
     generateJWT(user.id).then((token) => {
       return res.json({msg: 'Google sign in successfully', user, token})
     }).catch((error) => {
-      return catchError({error, type: errorTypes.generate_jwt, res});
+      return catchError({error, type: errorTypes.generate_jwt, extra: email, res});
     })
   } catch (error) {
     return catchError({error, type: errorTypes.google_signin, res});

@@ -29,7 +29,7 @@ const lbls = [
   },
 ]
 
-const socket = io();
+const socket = io('/tickets');
 
 socket.on('connect', () => {
   

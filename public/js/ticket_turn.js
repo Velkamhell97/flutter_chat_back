@@ -2,7 +2,7 @@ const lblTicket = document.querySelector('#lblNuevoTicket');
 const btnTicket = document.querySelector('#btnNuevoTicket');
 
 //-Esto se ejecuta cuando se entra a la pagina
-const socket = io();
+const socket = io('/tickets');
 
 socket.on('connect', () => {
   btnTicket.disabled = false;

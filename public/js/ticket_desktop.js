@@ -4,7 +4,7 @@ const btnDesktop = document.querySelector('#btnAtenderTicket');
 const lblAlert   = document.querySelector('#lblAlertaTickets');
 const lblTicket  = document.querySelector('#lblColaTickets');
 
-const socket = io();
+const socket = io('/tickets');
 
 const params = Object.fromEntries(new URLSearchParams(window.location.search));
 

@@ -1,23 +1,16 @@
 import { Server, Socket } from "socket.io";
-import TicketControl from "../models/ticket_control";
+
+import { TicketControl } from "../../models";
 
 const app = new TicketControl();
 
-const socketController = async (client : Socket, server : Server) => {
-  console.log('Client Connected (From Server)');
+const ticketsSocketController = async (client : Socket, server : Server) => {
+  // console.log('Client Connected (From Server)');
+  // console.log('entre tickets');
 
-  //----------------------- SOCKETS - DEMO -------------------------//
   client.on('disconnect', () => {
-    console.log('Client Disconnect (From Server)');
+    // console.log('Client Disconnect (From Server)');
   })
-
-  client.on('client-message', (payload, callback) => {
-    // server.emit('server-response', payload); //->Todos los cliente incluyendo al que disparo este on
-    client.broadcast.emit('server-response', payload) //->Todos los clientes excepto al que disparo el on
-
-    const feedback = {id: 123456, date: new Date().getTime()}; //Simulacion de id generado por ese mensaje
-    callback(feedback); //-Para disparar la retroalimentacion por parte del cliente, le pasa los argumentos esperados
-  });
 
   //----------------------- TICKET - SHARED -------------------------//
   client.emit('server-last-ticket', app.lastTicket);
@@ -49,4 +42,4 @@ const socketController = async (client : Socket, server : Server) => {
   })
 }
 
-export default socketController;
+export default ticketsSocketController;

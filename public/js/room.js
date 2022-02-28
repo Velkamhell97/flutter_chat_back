@@ -13,42 +13,48 @@ const ulMessages = document.querySelector('#ulMessages');
 const usersFragment = document.createDocumentFragment();
 const messagesFragment = document.createDocumentFragment();
 
+const { room } = Object.fromEntries(new URLSearchParams(window.location.search));
 let user = null;
 let socket = null;
 
+if(!room){
+  window.location = '/';
+}
+
 const main = async() => {
-  socket = io('/chat', {
+  socket = io('/rooms', {
     auth: {
       token: localStorage.getItem('token')
     }
   });
 
-  socket.on('connect', () => console.log('Server Connect'));
+  socket.on('connect', () =>  console.log(`Server Connected`));
 
   socket.on('disconnect', () => console.log('Server Disconnect'));
 
-  socket.on('connect_error', error => { //-Si ocurre un error se desconecta automaticamentes
+  socket.on('connect_error', error => {
     console.log('error: ', error.message);
     // window.location = '/';
   });
-  
+
   socket.on('user-auth', ({authUser, newToken}) => {
     user = authUser;
-    localStorage.setItem('token', newToken); //Alaraga la vida del token
+    localStorage.setItem('token', newToken);
 
     lblName.textContent = user.name
-    console.log(`El usuario ${user.name} ha iniciado sesion`);
+    socket.emit('user-room-connect', room);
+    console.log(`El usuario ${user.name} ha iniciado sesion en la sala ${room}`);
+  })
+  
+  socket.on('user-room-connect', (name) => {
+    console.log(`El usuario ${name} ha entrado a la sala ${room}`);
   })
 
-  socket.on('user-connect', (name) => {
-    console.log(`El usuario ${name} ha entrado al chat`);
+  socket.on('user-room-disconnect', (name) => {
+    console.log(`El usuario ${name} abandono la sala ${room}`);
   })
 
-  socket.on('user-disconnect', (name) => {
-    console.log(`El usuario ${name} abandono el chat`);
-  })
-
-  socket.on('incoming-message', ({messages=[{uid:'', name:'', message:''}], uid=''}) => {
+  socket.on('incoming-room-message', ({messages=[{uid:'', name:'', message:''}], uid=''}) => {
     ulMessages.replaceChildren();
 
     messages.forEach(message => {
@@ -58,6 +64,7 @@ const main = async() => {
 
       const li = document.createElement('li');
       li.className=`d-flex ${align}`;
+      li.tabIndex="1"
 
       const div = document.createElement('div');
       div.className = "p-2 rounded text-break mt-2"
@@ -84,7 +91,7 @@ const main = async() => {
     }
   })
 
-  socket.on('users-changes', (users = [{name:'', uid:''}]) => {
+  socket.on('users-room-changes', (users = [{name:'', uid:''}]) => {
     ulUsers.replaceChildren();
 
     users.forEach(user => {
@@ -107,10 +114,6 @@ const main = async() => {
 
     ulUsers.appendChild(usersFragment);
   })
-
-  socket.on('incoming-private-message', (payload) => {
-    console.log('private message: ', payload)
-  })
 }
 
 inputMessage.addEventListener('keyup', ({keyCode}) => {
@@ -118,20 +121,14 @@ inputMessage.addEventListener('keyup', ({keyCode}) => {
   const uid = inputUid.value;
   
   if(keyCode == 13 && message.length){
-    socket.emit('outcoming-message', {message, uid});
+    socket.emit('outcoming-room-message', {room, message, uid});
     inputMessage.value = '';
+    divScroll.scroll({top: divScroll.scrollHeight, behavior: 'smooth'});
   }
 })
 
-btnLogout.addEventListener('click', () => {
-  if(user.google){
-    console.log(google.accounts);
-    google.accounts.id.disableAutoSelect();
-    // google.accounts.id.revoke(user.email);
-  }
-
-  // localStorage.clear();
-  window.location = '/';
+btnBack.addEventListener('click', () => {
+  window.location = 'chat.html';
 });
 
 main();

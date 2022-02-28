@@ -7,8 +7,6 @@ import cloudinary from './cloudinary';
 
 import dbConnection from '../database/config';
 
-import socketController from '../sockets/controller';
-
 import { 
   AuthRouter, 
   UsersRouter, 
@@ -18,6 +16,10 @@ import {
   SearchsRouter,
   UploadsRouter
 } from '../routes';
+
+import { SocketsChat, SocketsIndex, SocketsRoom, SocketsTickets } from '../sockets/controllers';
+import { isAuth } from '../sockets/middlewares';
+
 
 class Server {
   private app : Application;
@@ -53,11 +55,11 @@ class Server {
 
     this.routes();
 
-    this.sockets();
   }
 
   async database(){
     await dbConnection();
+    this.sockets(); //-Para tener accesso a la db
   }
 
   middlewares() {
@@ -87,7 +89,13 @@ class Server {
   }
 
   sockets() {
-    this.io.on('connection', (socket) => socketController(socket, this.io));
+    this.io.of('/').on('connection', (socket) => SocketsIndex(socket, this.io));
+
+    this.io.of('/chat').use(isAuth).on('connection', (socket) => SocketsChat(socket, this.io));
+
+    this.io.of('/rooms').use(isAuth).on('connection', (socket) => SocketsRoom(socket, this.io));
+
+    this.io.of('/tickets').on('connection', (socket) => SocketsTickets(socket, this.io));
   }
 
   listen() {

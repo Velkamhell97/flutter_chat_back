@@ -59,7 +59,7 @@ userSchema.pre('findOneAndUpdate', function( next) {
 })
 
 userSchema.methods.toJSON = function() {
-  const { __v, _id, password, created, updated, lower, google, state, ...user  } = this.toObject();
+  const { __v, _id, password, created, updated, lower, state, ...user  } = this.toObject();
   user.uid = _id;
   return user;
 }

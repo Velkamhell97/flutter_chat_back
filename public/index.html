@@ -12,8 +12,20 @@
   
 
     <div class="container-fluid">
-      <h1>Google Sign in</h1>
-      <hr>
+      <h1>Auth</h1>
+
+      <form id="form" class="mb-4">
+        <div class="mb-3">
+          <label for="email" class="form-label">Email address</label>
+          <input type="email" class="form-control w-50" id="email">
+        </div>
+        <div class="mb-3">
+          <label for="password" class="form-label">Password</label>
+          <input type="password" class="form-control w-50" id="password">
+        </div>
+        <button type="submit" id="submit" class="btn btn-primary">Submit</button>
+      </form>
+
 
       <div id="g_id_onload"
         data-client_id="393915894706-9oqbduqen8u47gi3pcehbmu6pv153i65.apps.googleusercontent.com"
@@ -30,8 +42,8 @@
         data-logo_alignment="left">
       </div>
 
-      <div style="margin-top: 20px;">
-        <button id="google_signout" style="padding: 10px;  width: 240px;">
+      <div class="mt-2">
+        <button class="btn btn-danger" id="google_signout" onclick="googleSignOut()">
           Sign out
         </button>
       </div>
@@ -65,7 +77,7 @@
 
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <script src="./socket.io/socket.io.js"></script>
-  <script src="./js/chat.js"></script>
-  <script src="./js/google.js"></script>
+  <script src="./js/index.js"></script>
+  <script src="./js/auth.js"></script>
 </body>
 </html>
