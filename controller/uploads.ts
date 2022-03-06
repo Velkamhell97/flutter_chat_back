@@ -7,6 +7,7 @@ import { LocalUploadedFile } from "../interfaces/uploads";
 import { ProductDocument } from "../interfaces/products";
 import { uploadFileCloudinary } from "../helpers";
 import { UserDocument } from "../interfaces/users";
+import cloudinary from "../models/cloudinary";
 
 
 /**
@@ -18,6 +19,29 @@ import { UserDocument } from "../interfaces/users";
   const uploadedFiles = files.map<LocalUploadedFile>(file => ({fieldname: file.fieldname, name: file.filename, path: file.path}));
 
   res.json({msg: 'Files uploaded successfully', uploadedFiles})
+}
+
+
+/**
+ * @controller /api/uploads/chat : POST
+ */
+ export const uploadChatFileController = async(req: Request, res: Response) => {
+  const file: Express.Multer.File = res.locals.file; 
+  const ext = file.path.split('/').at(-1)?.split('.').at(-1)!;
+
+  try {
+    const response = await cloudinary.uploadImage({path: file.path, folder: 'chat', type: ext});
+    res.json({msg: 'Files uploaded successfully', file: response});
+  } catch (error:any) {
+    console.log(error);
+
+    return catchError({
+      error: error.error,
+      type: errorTypes.upload_cloudinary,
+      extra: error.msg,
+      res
+    });
+  }
 }
 
 

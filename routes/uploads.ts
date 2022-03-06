@@ -11,6 +11,7 @@ import { v4 } from 'uuid';
 import { 
   getProductImgMiddlewares, 
   getUserAvatarMiddlewares,
+  uploadChatFileMiddlewares,
   uploadFilesMiddlewares,
 } from "../middlewares/uploads";
 
@@ -18,6 +19,7 @@ import {
 import { 
   getProductImgController, 
   getUserAvatarController, 
+  uploadChatFileController, 
   uploadFilesCloudinaryController,
   uploadFilesLocalController,
 
@@ -53,6 +55,14 @@ router.post('/local',
   upload.any(),
   uploadFilesMiddlewares,
   uploadFilesLocalController
+)
+
+router.post('/chat', //-Se deberia manejar una ruta en temp, para no cargar el servidor
+  //->manejador de errores de multer
+  // (_req: Request, res: Response, next: NextFunction) => upload(_req, res, onUploadError(res, next)),
+  upload.any(),
+  uploadChatFileMiddlewares,
+  uploadChatFileController
 )
 
 router.post('/cloud',

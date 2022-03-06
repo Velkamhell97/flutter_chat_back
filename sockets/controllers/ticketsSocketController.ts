@@ -6,7 +6,7 @@ const app = new TicketControl();
 
 const ticketsSocketController = async (client : Socket, server : Server) => {
   // console.log('Client Connected (From Server)');
-  // console.log('entre tickets');
+  console.log('entre tickets');
 
   client.on('disconnect', () => {
     // console.log('Client Disconnect (From Server)');

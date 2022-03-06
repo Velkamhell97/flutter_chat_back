@@ -10,6 +10,8 @@ import {
   deleteUserMiddlewares, 
   getUserByIdMiddlewares, 
   getUserCategoriesMiddlewares, 
+  getUserChatMessagesMiddlewares, 
+  getUsersConnectedMiddlewares, 
   updateUserMiddlewares 
 } from "../middlewares";
 
@@ -21,6 +23,8 @@ import {
   getUserByIdController,
   getUserCategoriesController,
   getUsersController,
+  getUsersConnectedController,
+  getUserChatMessages,
 } from "../controller/users";
 
 const router = Router();
@@ -28,6 +32,11 @@ const router = Router();
 const upload = multer({dest: '/tmp/'})
 
 router.get('/', getUsersController);
+
+router.get('/connected', 
+  getUsersConnectedMiddlewares,
+  getUsersConnectedController,
+);
 
 router.get('/:id',
   getUserByIdMiddlewares,
@@ -37,6 +46,11 @@ router.get('/:id',
 router.get('/:id/categories',
   getUserCategoriesMiddlewares,
   getUserCategoriesController
+);
+
+router.get('/messages/:id',  //-El id es la persona destino :to
+  getUserChatMessagesMiddlewares,
+  getUserChatMessages
 );
 
 router.post('/', 

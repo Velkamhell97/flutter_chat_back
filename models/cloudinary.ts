@@ -4,7 +4,17 @@ import streamifier from 'streamifier';
 interface UploadParams {
   path: string,
   filename ?: string,
-  folder ?: string
+  folder ?: string,
+  type ?: string,
+}
+
+type AllowesExt = "jpg" | "jpeg" | "png" | "wav" | any;
+
+const resourceTypes: Record<AllowesExt, string> = {
+  jpg: "image",
+  jpeg: "image",
+  png: "image",
+  wav: "video"
 }
 
 class Cloudinary {
@@ -25,12 +35,13 @@ class Cloudinary {
   }
   
   //->Si envia un path lo sobreescribe si no genera un id
-  async uploadImage({path, filename, folder}: UploadParams) : Promise<UploadApiResponse> {
-    return await this.cloudinary.uploader.upload(path,{
-      public_id: filename,
-      folder:`flutter_chat_back/${folder}`,
-      overwrite: filename ? true : false
-    });
+  async uploadImage({path, filename, folder, type = 'jpg'}: UploadParams) : Promise<UploadApiResponse> {
+      return await this.cloudinary.uploader.upload(path,{
+        public_id: filename,
+        folder:`flutter_chat_back/${folder}`,
+        overwrite: filename ? true : false,
+        resource_type: resourceTypes[type]
+      });
   }
 
   async removeImage(url:string, folder?:string) {

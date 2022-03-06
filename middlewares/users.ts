@@ -1,4 +1,5 @@
-  import { check } from 'express-validator';
+import { check } from 'express-validator';
+
 import { 
     createUserBody, 
     deleteUserBody, 
@@ -18,6 +19,10 @@ import {
     validateUserID
   } from './validations/user_validations';
 
+  export const getUsersConnectedMiddlewares = [
+    validateJWT,
+  ]
+
   export const getUserByIdMiddlewares = [
     check('id', 'Invalid ID').isMongoId(),
     validateBody,
@@ -29,6 +34,11 @@ import {
     validateBody,
     validateUserID
   ]
+
+  export const getUserChatMessagesMiddlewares = [
+    validateJWT,
+    validateUserID,
+  ];
 
   export const createUserMiddlewares = [
     ...createUserBody,

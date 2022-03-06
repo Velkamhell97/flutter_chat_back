@@ -8,14 +8,12 @@ const chat = new Chat();
 const socketChatController = async (client : Socket, server : Server) => {
   // console.log('Client Connected (From Server)');
   
-  client.on('disconnect', () => {
-    // console.log('Client Disconnect (From Server)');
-  })
-
   //----------------------- SERVER - CONNECT -------------------------//
   const user: UserDocument = client.data.authUser;
   chat.addUser(user);
-  
+
+  user.updateOne({online:true}).then(_ => server.of('/mobile-chat').emit('user-connect')); //-Al parecer toca ponerlo (en ausencia del await)
+
   client.emit('user-auth', {authUser:user, newToken: client.data.newToken}) //-Usuario autenticado - solo el que se conecta
   client.emit('incoming-message', {messages: chat.lastMessages, uid: user.id}); //-Solo el cliente actualiza su lista de usuarios
 
@@ -28,6 +26,7 @@ const socketChatController = async (client : Socket, server : Server) => {
 
   //----------------------- CHAT - GLOBAL -------------------------//
   client.on('disconnect', () => {
+    user.updateOne({online:false}).then(_ => server.of('/mobile-chat').emit('user-disconnect'));
     chat.removeUser(user.id); 
     server.of('/chat').emit('users-changes', chat.usersList);
     client.broadcast.emit('user-disconnect', user.name);

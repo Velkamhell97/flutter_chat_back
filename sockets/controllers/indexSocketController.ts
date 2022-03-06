@@ -1,12 +1,14 @@
 import { Server, Socket } from "socket.io";
 
 const indexSocketController = async (client : Socket, server : Server) => {
-  // console.log('Client Connected (From Server)');
-  // console.log('entre index');
+  console.log('Client Connected (From Server)');
 
   client.on('disconnect', () => {
-    // console.log('Client Disconnect (From Server)');
+    console.log('Client Disconnect (From Server)');
   })
+
+  // client.emit('welcome-message', {message: 'welcome'}); 
+  // client.on('welcome-response', (payload) => console.log(payload.message)); 
 
   client.on('client-message', (payload, callback) => {
     // server.emit('server-response', payload); //->Todos los cliente incluyendo al que disparo este on

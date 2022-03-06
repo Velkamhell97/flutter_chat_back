@@ -3,7 +3,7 @@ import bcryptjs from 'bcryptjs';
 
 import { catchError, errorTypes } from '../errors';
 import { generateJWT } from "../helpers";
-import { User } from '../models';
+import { Message, User } from '../models';
 import { UserDocument, UsersRequest } from "../interfaces/users";
 import cloudinary from "../models/cloudinary";
 
@@ -28,6 +28,22 @@ export const getUsersController = async (req: UsersRequest, res: Response) => {
   }
 }
 
+
+/**
+ * @controller /api/users/connected : GET
+ */
+ export const getUsersConnectedController = async (req: UsersRequest, res: Response) => {
+  const { limit = 5, from = 0 } = req.query;
+  const authUser: UserDocument = res.locals.authUser;
+
+  //_id: {$ne: authUser.id}
+  try {
+    const users = await User.find({state:true, _id: {$ne: authUser.id}}).sort('-online').populate('role', 'name');
+    res.json({msg: 'Users get successfully', users});
+  } catch (error) {
+    return catchError({error, type: errorTypes.get_users, res});
+  }
+}
 
 /**
  * @controller /api/users/:id : GET 
@@ -55,6 +71,26 @@ export const getUsersController = async (req: UsersRequest, res: Response) => {
   } catch (error) {
     return catchError({error, type: errorTypes.get_user_categories, res});
   }
+}
+
+
+/**
+ * @controller /api/users/messages/:id : GET
+ */
+ export const getUserChatMessages = async (req: UsersRequest, res: Response) => {
+  const from: UserDocument = res.locals.authUser;
+  const to: UserDocument = res.locals.user;
+
+  //-Se buscan los mensajes que yo le he enviado y los que el me ha enviado
+  const lastMessages = await Message.find({
+    $or: [{from: from.id, to: to.id}, {from: to.id, to: from.id}]
+  }).sort({'createdAt' : 'desc'}).limit(30);
+
+ try {
+   res.json({msg: 'User messages get successfully', messages: lastMessages});
+ } catch (error) {
+   return catchError({error, type: errorTypes.get_user_chat_messages, res});
+ }
 }
 
 

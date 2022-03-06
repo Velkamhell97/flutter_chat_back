@@ -25,6 +25,7 @@ export const isAuth = async (socket:Socket, next:SocketNext) => {
     next();
   } catch (error) {
     console.log('error: ', error);
+    socket.emit('connect_error2', error);
     next(new CustomError('Unauthoraized', error));
   }
 }

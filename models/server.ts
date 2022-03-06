@@ -17,7 +17,7 @@ import {
   UploadsRouter
 } from '../routes';
 
-import { SocketsChat, SocketsIndex, SocketsRoom, SocketsTickets } from '../sockets/controllers';
+import { SocketsChat, SocketsIndex, SocketsMobileChat, SocketsRoom, SocketsTickets } from '../sockets/controllers';
 import { isAuth } from '../sockets/middlewares';
 
 
@@ -55,11 +55,12 @@ class Server {
 
     this.routes();
 
+    this.sockets(); //-Al parecer es necesario que este aqui 
   }
 
   async database(){
     await dbConnection();
-    this.sockets(); //-Para tener accesso a la db
+    // this.sockets(); //-La espera causaba que los clientes no se conectaran
   }
 
   middlewares() {
@@ -92,6 +93,8 @@ class Server {
     this.io.of('/').on('connection', (socket) => SocketsIndex(socket, this.io));
 
     this.io.of('/chat').use(isAuth).on('connection', (socket) => SocketsChat(socket, this.io));
+
+    this.io.of('/mobile-chat').use(isAuth).on('connection', (socket) => SocketsMobileChat(socket, this.io));
 
     this.io.of('/rooms').use(isAuth).on('connection', (socket) => SocketsRoom(socket, this.io));
 

@@ -34,6 +34,8 @@ type ErrorTypes =
 | "user_not_found"
 | "duplicate_email"
 | "role_not_found"
+| "get_user_chat_messages"
+| "save_message"
 
 | "get_categories" //-> Categories Errors  
 | "get_categories_by_name"
@@ -133,6 +135,19 @@ export const errorTypes: Record<ErrorTypes, AppError> ={
     name: 'ROLE_NOT_FOUND_ERROR',
     code: 400, 
   },
+
+  get_user_chat_messages: {
+    msg: 'There was an error while getting the user chat messages',
+    name: 'GET_USER_CHAT_MESSAGES',
+    code: 400,
+  },
+
+  save_message: {
+    msg: 'There was an error while saving the message',
+    name: 'DATABASE_ERROR',
+    code: 500,
+  },
+
 
   //------------------------------Category Errors-----------------------------//
   get_categories: {
