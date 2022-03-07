@@ -11,7 +11,7 @@ import { Token, User } from '../../models';
  */
  export const validateLogin = async (req : AuthRequest, res : Response, next: NextFunction) => {
   const { email, password } = req.body;
-  
+    
   const user = await User.findOne({email});
 
   if(!user || user.state == false){
