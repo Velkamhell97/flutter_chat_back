@@ -16,14 +16,25 @@ const socketMobileChatController = async (client : Socket, server : Server) => {
   //-Una vez se conecta un usuario se le crea una sala personalizada con su ID
   client.join(user.id);
 
-  //-Cuando llega un mensaje del usuario conectado, se guarda en la db y se envia a el destinatario del mensaje
-  client.on('chat-message', async ({id, ...payload}) => {
+  client.on('message-id', async ({id, ...payload}, callback) => {
     try {
-      Message.create(payload).then(record => {
-        server.of('/mobile-chat').to(payload.to).emit('chat-message', JSON.stringify({message: {id: record.id, ...payload}}));
-      }); //-No se deja con el await para no detener el emit, pero puede fallar 
+      const message = new Message(payload);
+      message.save().then(() => {
+        callback(message.id);
+      });
     } catch (error) {
-      console.log('There was and error while save the message');
+      // console.log('There was and error while save the message');
+    }
+  });
+
+  //-Cuando llega un mensaje del usuario conectado, se guarda en la db y se envia a el destinatario del mensaje
+  client.on('chat-message', async (payload) => {
+    try {
+      Message.findByIdAndUpdate(payload.id, { $set: { tempUrl: payload.tempUrl }}).then(_ => {
+        server.of('/mobile-chat').to(payload.to).emit('chat-message', JSON.stringify({message: payload}));
+      });
+    } catch (error) {
+      // console.log('There was and error while save the message');
     }
   });
 

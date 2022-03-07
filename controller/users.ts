@@ -168,7 +168,7 @@ export const updateUserController = async (req: UsersRequest, res: Response) => 
 
 
 /**
- * @controller /api/users/unread/:id (to-id) : PUT
+ * @controller /api/users/unread/:from (to-id) : PUT
  */
  export const updateUnreadUserController = async (req: UsersRequest, res: Response) => {
   const user: UserDocument = res.locals.authUser;
