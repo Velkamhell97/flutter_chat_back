@@ -28,6 +28,7 @@ import {
   getUserChatMessages,
   updateUnreadUserController,
 } from "../controller/users";
+import { Message } from "../models";
 
 const router = Router();
 
@@ -76,6 +77,15 @@ router.put('/unread/:from',
 router.delete('/:id', 
   deleteUserMiddlewares,
   deleteUserController
+); 
+
+router.delete('/messages/:all', 
+  async (req, res) => {
+    await Message.deleteMany({}) ;
+    res.json({
+      msg: 'Messages deleted Succesfully'
+    })
+  }
 ); 
 
 export default router;

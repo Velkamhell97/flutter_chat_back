@@ -32,6 +32,7 @@ const socketMobileChatController = async (client : Socket, server : Server) => {
     try {
       Message.findByIdAndUpdate(payload.id, {tempUrl: payload.tempUrl}, { new: true }).then(record => {
         server.of('/mobile-chat').to(payload.to).emit('chat-message', JSON.stringify({message: record}));
+        server.of('/mobile-chat').to(payload.to).emit('chat-home-message', JSON.stringify({message: record}));
       });
     } catch (error) {
       // console.log('There was and error while save the message');
