@@ -12,6 +12,7 @@ import {
   getUserCategoriesMiddlewares, 
   getUserChatMessagesMiddlewares, 
   getUsersConnectedMiddlewares, 
+  updateUnreadUserMiddlewares, 
   updateUserMiddlewares 
 } from "../middlewares";
 
@@ -25,6 +26,7 @@ import {
   getUsersController,
   getUsersConnectedController,
   getUserChatMessages,
+  updateUnreadUserController,
 } from "../controller/users";
 
 const router = Router();
@@ -63,6 +65,12 @@ router.put('/:id',
   upload.any(),
   updateUserMiddlewares,
   updateUserController,
+); 
+
+router.put('/unread/:from', 
+  upload.any(),
+  updateUnreadUserMiddlewares,
+  updateUnreadUserController,
 ); 
 
 router.delete('/:id', 

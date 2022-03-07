@@ -57,6 +57,10 @@ import {
     validateSingleFile('avatar', ['jpg', 'jpeg', 'png'])
   ]
 
+  export const updateUnreadUserMiddlewares = [
+    validateJWT,
+  ]
+
   export const deleteUserMiddlewares = [
     validateJWT,
     validateUserID,

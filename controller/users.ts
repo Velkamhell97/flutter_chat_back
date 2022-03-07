@@ -33,12 +33,11 @@ export const getUsersController = async (req: UsersRequest, res: Response) => {
  * @controller /api/users/connected : GET
  */
  export const getUsersConnectedController = async (req: UsersRequest, res: Response) => {
-  const { limit = 5, from = 0 } = req.query;
   const authUser: UserDocument = res.locals.authUser;
 
-  //_id: {$ne: authUser.id}
   try {
-    const users = await User.find({state:true, _id: {$ne: authUser.id}}).sort('-online').populate('role', 'name');
+    const users = await User.find({_id: {$ne: authUser.id}}).sort('-online').populate('role', 'name');
+    
     res.json({msg: 'Users get successfully', users});
   } catch (error) {
     return catchError({error, type: errorTypes.get_users, res});
@@ -167,6 +166,31 @@ export const updateUserController = async (req: UsersRequest, res: Response) => 
   }
 }
 
+
+/**
+ * @controller /api/users/unread/:id (to-id) : PUT
+ */
+ export const updateUnreadUserController = async (req: UsersRequest, res: Response) => {
+  const user: UserDocument = res.locals.authUser;
+  const { from } = req.params;
+
+  const { reset = false } = req.body as any;
+
+  try {
+    if(reset){
+      user.unread.set(from, 0);
+    } else {
+      const actual = user.unread.get(from) ?? 0;
+      user.unread.set(from, actual + 1);
+    } 
+    
+    await user.save();
+
+    return res.json({msg: 'User unread update successfully', value: user.unread.get(from)});
+  } catch (error) {
+    return catchError({error, type: errorTypes.update_user, res});
+  }
+}
 
 /**
  * @controller /api/users/:id : DELETE

@@ -10,6 +10,7 @@ export interface User {
   role      : Types.ObjectId,
   google    : boolean,
   state     : boolean,
+  unread    : Map<string, number>
 }
 
 const userSchema = new Schema<User>({
@@ -22,6 +23,7 @@ const userSchema = new Schema<User>({
   role     : { type: Schema.Types.ObjectId, ref: 'Role', required: [true, 'The role is required'] },
   google   : { type: Boolean, default: false },
   state    : { type: Boolean, default: true },
+  unread   : { type: Map, of: Number, default: new Map<string, number>() }
 }, 
   { 
     // toJSON: { virtuals: true },
@@ -59,8 +61,9 @@ userSchema.pre('findOneAndUpdate', function( next) {
 })
 
 userSchema.methods.toJSON = function() {
-  const { __v, _id, password, created, updated, lower, state, ...user  } = this.toObject();
+  const { __v, _id, password, created, updated, lower, state, unread, ...user  } = this.toObject();
   user.uid = _id;
+  user.unread = Object.fromEntries(unread);
   return user;
 }
 

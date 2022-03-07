@@ -8,6 +8,7 @@ export interface Message {
   image ?: string,
   audio ?: string,
   tempUrl ?: string,
+  read : boolean
 }
 
 const messageSchema = new Schema<Message>({
@@ -18,12 +19,13 @@ const messageSchema = new Schema<Message>({
   image: String,
   audio: String,
   tempUrl: String,
+  read: { type: Boolean, default: false }
 }, {
   timestamps: { createdAt: true, updatedAt: false }
 })
 
 messageSchema.methods.toJSON = function() {
-  const { __v, _id, ...message  } = this.toObject();
+  const { __v, ...message  } = this.toObject();
   return message;
 }
 
