@@ -29,7 +29,6 @@ const socketMobileChatController = async (client : Socket, server : Server) => {
 
   //-Cuando llega un mensaje del usuario conectado, se guarda en la db y se envia a el destinatario del mensaje
   client.on('chat-message', async (payload) => {
-    console.log(payload);
     try {
       Message.findByIdAndUpdate(payload.id, {tempUrl: payload.tempUrl}, { new: true }).then(record => {
         server.of('/mobile-chat').to(payload.to).emit('chat-message', JSON.stringify({message: record}));
