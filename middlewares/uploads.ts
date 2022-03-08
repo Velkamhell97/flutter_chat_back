@@ -12,7 +12,7 @@ export const uploadFilesMiddlewares = [
 
 export const uploadChatFileMiddlewares = [
   validateJWT,
-  validateSingleFile('file', ['jpg', 'jpeg', 'png', 'wav'])
+  validateSingleFile('file', ['jpg', 'jpeg', 'webp', 'png', 'wav'])
 ]
 
 export const getUserAvatarMiddlewares = [
