@@ -14,7 +14,8 @@ import {
   RolesRouter, 
   ProductsRouter, 
   SearchsRouter,
-  UploadsRouter
+  UploadsRouter,
+  PaymentsRouter
 } from '../routes';
 
 import { SocketsChat, SocketsIndex, SocketsMobileChat, SocketsRoom, SocketsTickets } from '../sockets/controllers';
@@ -44,7 +45,8 @@ class Server {
       categories : '/api/categories',
       products   : '/api/products',
       searchs    : '/api/searchs',
-      uploads    : '/api/uploads'
+      uploads    : '/api/uploads',
+      payments   : '/api/payments'
     } 
     
     cloudinary.init();
@@ -87,6 +89,8 @@ class Server {
     this.app.use(this.paths.searchs, SearchsRouter);
 
     this.app.use(this.paths.uploads, UploadsRouter);
+
+    this.app.use(this.paths.payments, PaymentsRouter);
   }
 
   sockets() {

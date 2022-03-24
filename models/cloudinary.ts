@@ -22,16 +22,22 @@ class Cloudinary {
 
   constructor(){
     this.cloudinary = v2;
-  }
-
-  init(){
-    //-se debe instanciar la clase luego de que se creen las variables de entorno
-    // this.cloudinary.config(process.env.CLOUDINARY_URL!); //->No funciono con la variable de entorno
+    
     this.cloudinary.config({
       cloud_name: process.env.CLOUDINARY_CLOUD,
       api_key: process.env.CLOUDINARY_API_KEY,
       api_secret: process.env.CLOUDINARY_SECRET_KEY
     })
+  }
+
+  init(){
+    //-se debe instanciar la clase luego de que se creen las variables de entorno
+    // this.cloudinary.config(process.env.CLOUDINARY_URL!); //->No funciono con la variable de entorno
+    // this.cloudinary.config({
+    //   cloud_name: process.env.CLOUDINARY_CLOUD,
+    //   api_key: process.env.CLOUDINARY_API_KEY,
+    //   api_secret: process.env.CLOUDINARY_SECRET_KEY
+    // })
   }
   
   //->Si envia un path lo sobreescribe si no genera un id

@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node dist/app.js",
-    "start:dev": "tsc && node dist/app.js",
+    "start": "node -r dotenv/config dist/app.js",
+    "start:dev": "tsc && node -r dotenv/config dist/app.js",
     "postinstall": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -29,6 +29,7 @@
     "socket.io": "^4.4.1",
     "socket.io-client": "^4.4.1",
     "streamifier": "^0.1.1",
+    "stripe": "^8.211.0",
     "uuid": "^8.3.2"
   },
   "devDependencies": {

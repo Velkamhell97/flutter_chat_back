@@ -5,6 +5,7 @@ import RolesRouter from './roles';
 import ProductsRouter from './products';
 import SearchsRouter from './searchs';
 import UploadsRouter from './uploads';
+import PaymentsRouter from './payments';
 
 export {
   AuthRouter,
@@ -13,5 +14,6 @@ export {
   RolesRouter,
   ProductsRouter,
   SearchsRouter,
-  UploadsRouter
+  UploadsRouter,
+  PaymentsRouter
 }
