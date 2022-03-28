@@ -22,7 +22,7 @@ class Cloudinary {
 
   constructor(){
     this.cloudinary = v2;
-    
+
     this.cloudinary.config({
       cloud_name: process.env.CLOUDINARY_CLOUD,
       api_key: process.env.CLOUDINARY_API_KEY,
@@ -42,12 +42,12 @@ class Cloudinary {
   
   //->Si envia un path lo sobreescribe si no genera un id
   async uploadImage({path, filename, folder, type = 'jpg'}: UploadParams) : Promise<UploadApiResponse> {
-      return await this.cloudinary.uploader.upload(path,{
-        public_id: filename,
-        folder:`flutter_chat_back/${folder}`,
-        overwrite: filename ? true : false,
-        resource_type: resourceTypes[type]
-      });
+    return await this.cloudinary.uploader.upload(path,{
+      public_id: filename,
+      folder:`flutter_chat_back/${folder}`,
+      overwrite: filename ? true : false,
+      resource_type: resourceTypes[type]
+    });
   }
 
   async removeImage(url:string, folder?:string) {

@@ -80,6 +80,8 @@ type ErrorTypes =
 | "send_token_mail"
 | "invalid_reset_token"
 
+| "stripe_error" //-Aqui se pueden desglosar mas cada error
+
 export const errorTypes: Record<ErrorTypes, AppError> ={
   //------------------------------User Errors -----------------------------//
   get_users: {
@@ -389,6 +391,12 @@ export const errorTypes: Record<ErrorTypes, AppError> ={
   invalid_reset_token: {
     msg: 'The reset token is invalid or expired',
     name: 'INVALID_RESET_TOKEN_ERROR',
+    code: 400
+  },
+
+  stripe_error: {
+    msg: 'There was an error with the payment',
+    name: 'STRIPE_ERROR',
     code: 400
   }
 } 

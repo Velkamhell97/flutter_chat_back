@@ -49,7 +49,8 @@ class Server {
       payments   : '/api/payments'
     } 
     
-    cloudinary.init();
+    //No necesario con el preload
+    // cloudinary.init();
 
     this.database();
 
@@ -68,7 +69,9 @@ class Server {
   middlewares() {
     this.app.use(cors());
 
-    this.app.use(express.json());
+    //Setearlo global da un problema cuando se quiere manejar el raw de los payments de stripe, se define despues 
+    //-de la ruta requerida
+    // this.app.use(express.json());
 
     this.app.use(express.static('public'))
 
@@ -76,7 +79,11 @@ class Server {
   }
 
   routes() {
-    this.app.use(this.paths.roles, RolesRouter);
+    this.app.use(this.paths.payments, PaymentsRouter);
+    
+    this.app.use(express.json());
+
+    this.app.use(this.paths.roles,  RolesRouter);
 
     this.app.use(this.paths.auth, AuthRouter);
     
@@ -89,8 +96,6 @@ class Server {
     this.app.use(this.paths.searchs, SearchsRouter);
 
     this.app.use(this.paths.uploads, UploadsRouter);
-
-    this.app.use(this.paths.payments, PaymentsRouter);
   }
 
   sockets() {
